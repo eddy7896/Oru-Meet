@@ -81,6 +81,10 @@
   - [x] Advanced Settings — Integrated `@livekit/track-processors` for Virtual Background Blur
   - [x] Device Selection — Added modal for dynamic camera and microphone selection mid-call
   - [x] Easy Invites — Added Invite modal with copy link and mailto share hooks
+- [x] **Sprint 8 Complete:**
+  - [x] UI Foundation — Extracted raw tailwind classes into a Google Meet inspired `.room-theme` using CSS variables
+  - [x] Component Library — Created reusable `<Button>`, `<IconButton>`, and `<Panel>` components for consistency
+  - [x] Global Refactor — Refactored all room components to use the semantic design system
 
 ---
 

@@ -124,16 +124,16 @@ export default function PollsPanel({
 
   return (
     <aside
-      className="flex w-full md:w-[320px] shrink-0 flex-col border-l border-white/10 bg-[#111827]"
+      className="flex w-full md:w-[320px] shrink-0 flex-col border-l border-border bg-[#111827]"
       aria-label="Polls panel"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <h2 className="text-sm font-semibold text-white">Polls</h2>
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <h2 className="text-sm font-semibold text-text-primary">Polls</h2>
         <button
           onClick={onClose}
           aria-label="Close polls"
-          className="rounded-lg p-1 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+          className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -142,13 +142,13 @@ export default function PollsPanel({
       <div className="flex-1 overflow-y-auto px-4 py-3">
         {isCreating ? (
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-white">Create a poll</h3>
+            <h3 className="text-sm font-medium text-text-primary">Create a poll</h3>
             <input
               type="text"
               placeholder="Ask a question..."
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              className="w-full rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 outline-none"
+              className="w-full rounded-xl border border-border bg-surface-container px-3 py-2 text-sm text-text-primary placeholder-white/30 outline-none"
             />
             <div className="space-y-2">
               {options.map((opt, i) => (
@@ -158,12 +158,12 @@ export default function PollsPanel({
                     placeholder={`Option ${i + 1}`}
                     value={opt.text}
                     onChange={(e) => setOptions(prev => prev.map(o => o.id === opt.id ? { ...o, text: e.target.value } : o))}
-                    className="flex-1 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 outline-none"
+                    className="flex-1 rounded-xl border border-border bg-surface-container px-3 py-2 text-sm text-text-primary placeholder-white/30 outline-none"
                   />
                   {options.length > 2 && (
                     <button
                       onClick={() => setOptions(prev => prev.filter(o => o.id !== opt.id))}
-                      className="p-2 text-white/40 hover:text-[#DC2626]"
+                      className="p-2 text-text-secondary hover:text-[#DC2626]"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -182,14 +182,14 @@ export default function PollsPanel({
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setIsCreating(false)}
-                className="flex-1 rounded-xl border border-[#374151] py-2 text-xs font-medium text-white/70 hover:bg-white/5"
+                className="flex-1 rounded-xl border border-[#374151] py-2 text-xs font-medium text-text-secondary hover:bg-surface-container"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreatePoll}
                 disabled={isSubmitting || !question.trim() || options.some(o => !o.text.trim())}
-                className="flex-1 rounded-xl bg-[#1A73E8] py-2 text-xs font-medium text-white hover:bg-[#1557B0] disabled:opacity-50"
+                className="flex-1 rounded-xl bg-[#1A73E8] py-2 text-xs font-medium text-text-primary hover:bg-[#1557B0] disabled:opacity-50"
               >
                 {isSubmitting ? "Saving..." : "Launch Poll"}
               </button>
@@ -200,7 +200,7 @@ export default function PollsPanel({
             {isHost && (
               <button
                 onClick={() => setIsCreating(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/10 py-2.5 text-sm font-medium text-white hover:bg-white/20 transition-colors"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-surface-container py-2.5 text-sm font-medium text-text-primary hover:bg-surface-container transition-colors"
               >
                 <BarChart2 className="h-4 w-4" />
                 Create a Poll
@@ -208,7 +208,7 @@ export default function PollsPanel({
             )}
 
             {polls.length === 0 ? (
-              <p className="text-center text-xs text-white/40 mt-8">No polls yet.</p>
+              <p className="text-center text-xs text-text-secondary mt-8">No polls yet.</p>
             ) : (
               <div className="space-y-4">
                 {polls.map((poll) => (
@@ -249,8 +249,8 @@ function PollCard({ poll, responses, userId }: { poll: Poll; responses: PollResp
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <h3 className="mb-3 text-sm font-medium text-white">{poll.question}</h3>
+    <div className="rounded-xl border border-border bg-surface-container p-4">
+      <h3 className="mb-3 text-sm font-medium text-text-primary">{poll.question}</h3>
       <div className="space-y-2">
         {poll.options.map((opt) => {
           const votes = responses.filter(r => r.option_id === opt.id).length;
@@ -261,7 +261,7 @@ function PollCard({ poll, responses, userId }: { poll: Poll; responses: PollResp
           const showResults = !!userVote || !poll.is_active;
 
           return (
-            <div key={opt.id} className="relative overflow-hidden rounded-lg bg-white/10">
+            <div key={opt.id} className="relative overflow-hidden rounded-lg bg-surface-container">
               {showResults && (
                 <div 
                   className="absolute bottom-0 left-0 top-0 bg-[#1A73E8]/30 transition-all duration-500" 
@@ -273,8 +273,8 @@ function PollCard({ poll, responses, userId }: { poll: Poll; responses: PollResp
                 disabled={showResults || isVoting}
                 className={cn(
                   "relative flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors",
-                  !showResults && "hover:bg-white/20",
-                  isSelected ? "text-white" : "text-white/80"
+                  !showResults && "hover:bg-surface-container",
+                  isSelected ? "text-text-primary" : "text-text-secondary"
                 )}
               >
                 <span className="flex items-center gap-2 relative z-10">
@@ -282,14 +282,14 @@ function PollCard({ poll, responses, userId }: { poll: Poll; responses: PollResp
                   {opt.text}
                 </span>
                 {showResults && (
-                  <span className="text-xs text-white/50 relative z-10">{percentage}%</span>
+                  <span className="text-xs text-text-secondary relative z-10">{percentage}%</span>
                 )}
               </button>
             </div>
           );
         })}
       </div>
-      <div className="mt-3 text-right text-[10px] text-white/40">
+      <div className="mt-3 text-right text-[10px] text-text-secondary">
         {totalVotes} vote{totalVotes !== 1 ? 's' : ''}
       </div>
     </div>

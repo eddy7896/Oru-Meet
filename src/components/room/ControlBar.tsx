@@ -8,6 +8,8 @@ import {
   useDataChannel,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
+import { IconButton } from "@/components/ui/IconButton";
+import { Button } from "@/components/ui/Button";
 import {
   Mic,
   MicOff,
@@ -133,32 +135,32 @@ export default function ControlBar({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-2xl border border-[#374151] bg-[#1F2937] p-6 shadow-xl">
             <div className="mb-4 flex items-start justify-between">
-              <h2 className="text-base font-semibold text-white">
+              <h2 className="text-base font-semibold text-text-primary">
                 End meeting for everyone?
               </h2>
               <button
                 onClick={() => setShowEndConfirm(false)}
                 aria-label="Cancel"
-                className="rounded-lg p-1 text-white/50 hover:bg-white/10 hover:text-white"
+                className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="mb-6 text-sm text-white/60">
+            <p className="mb-6 text-sm text-text-secondary">
               This will disconnect all participants and mark the meeting as
               ended. This cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowEndConfirm(false)}
-                className="flex-1 rounded-xl border border-[#374151] py-2.5 text-sm font-medium text-white/70 hover:bg-white/5"
+                className="flex-1 rounded-xl border border-[#374151] py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-container"
               >
                 Cancel
               </button>
               <button
                 onClick={handleEndMeeting}
                 disabled={isEnding}
-                className="flex-1 rounded-xl bg-[#DC2626] py-2.5 text-sm font-semibold text-white hover:bg-[#B91C1C] disabled:opacity-60"
+                className="flex-1 rounded-xl bg-[#DC2626] py-2.5 text-sm font-semibold text-text-primary hover:bg-[#B91C1C] disabled:opacity-60"
               >
                 {isEnding ? "Ending…" : "End for everyone"}
               </button>
@@ -169,12 +171,12 @@ export default function ControlBar({
 
       {/* Control Bar */}
       <footer
-        className="flex items-center justify-center gap-2 border-t border-white/10 px-6 py-3"
+        className="flex items-center justify-center gap-2 border-t border-border px-6 py-3 bg-surface"
         role="toolbar"
         aria-label="Meeting controls"
       >
         {/* Mic toggle */}
-        <ControlButton
+        <IconButton
           onClick={() => toggleMic()}
           active={micEnabled}
           activeLabel="Mute microphone"
@@ -185,7 +187,7 @@ export default function ControlBar({
         />
 
         {/* Camera toggle */}
-        <ControlButton
+        <IconButton
           onClick={() => toggleCam()}
           active={camEnabled}
           activeLabel="Turn off camera"
@@ -196,7 +198,7 @@ export default function ControlBar({
         />
 
         {/* Screen share */}
-        <ControlButton
+        <IconButton
           onClick={() => toggleScreen()}
           active={screenEnabled}
           activeLabel="Stop screen sharing"
@@ -207,7 +209,7 @@ export default function ControlBar({
         />
 
         {/* Hand Raise */}
-        <ControlButton
+        <IconButton
           onClick={toggleHandRaise}
           active={isHandRaised}
           activeLabel="Lower hand"
@@ -218,7 +220,7 @@ export default function ControlBar({
         />
 
         {/* Settings */}
-        <ControlButton
+        <IconButton
           onClick={() => setShowSettings(true)}
           active={false}
           activeLabel="Settings"
@@ -228,7 +230,7 @@ export default function ControlBar({
         />
 
         {/* Invite */}
-        <ControlButton
+        <IconButton
           onClick={() => setShowInvite(true)}
           active={false}
           activeLabel="Invite people"
@@ -238,10 +240,10 @@ export default function ControlBar({
         />
 
         {/* Divider */}
-        <div className="mx-1 h-8 w-px bg-white/10" />
+        <div className="mx-1 h-8 w-px bg-border" />
 
         {/* Chat panel toggle */}
-        <ControlButton
+        <IconButton
           onClick={() => onTogglePanel("chat")}
           active={activePanel === "chat"}
           activeLabel="Close chat"
@@ -252,7 +254,7 @@ export default function ControlBar({
         />
 
         {/* Participants panel toggle */}
-        <ControlButton
+        <IconButton
           onClick={() => onTogglePanel("participants")}
           active={activePanel === "participants"}
           activeLabel="Close participants list"
@@ -263,7 +265,7 @@ export default function ControlBar({
         />
 
         {/* Polls panel toggle */}
-        <ControlButton
+        <IconButton
           onClick={() => onTogglePanel("polls")}
           active={activePanel === "polls"}
           activeLabel="Close polls"
@@ -274,7 +276,7 @@ export default function ControlBar({
         />
 
         {/* Whiteboard panel toggle */}
-        <ControlButton
+        <IconButton
           onClick={() => onTogglePanel("whiteboard")}
           active={activePanel === "whiteboard"}
           activeLabel="Close whiteboard"
@@ -286,7 +288,7 @@ export default function ControlBar({
 
         {/* Breakouts panel toggle (Host Only) */}
         {role === "host" && (
-          <ControlButton
+          <IconButton
             onClick={() => onTogglePanel("breakouts")}
             active={activePanel === "breakouts"}
             activeLabel="Close breakout rooms"
@@ -298,11 +300,11 @@ export default function ControlBar({
         )}
 
         {/* Divider */}
-        <div className="mx-1 h-8 w-px bg-white/10" />
+        <div className="mx-1 h-8 w-px bg-border" />
 
         {/* Host controls (Lock) */}
         {role === "host" && (
-          <ControlButton
+          <IconButton
             onClick={toggleLock}
             active={isLocked}
             activeLabel="Unlock room"
@@ -315,68 +317,28 @@ export default function ControlBar({
         {/* Leave / End meeting */}
         <div className="flex shrink-0">
           {role === "host" ? (
-            <button
+            <Button
               id="end-meeting-btn"
+              variant="danger"
               onClick={() => setShowEndConfirm(true)}
               aria-label="End meeting for everyone"
-              className="flex items-center gap-2 rounded-full bg-[#DC2626] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 hover:bg-[#B91C1C] active:scale-95"
+              icon={<PhoneOff className="h-4 w-4" />}
             >
-              <PhoneOff className="h-4 w-4" />
               End
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               id="leave-meeting-btn"
+              variant="danger"
               onClick={handleLeave}
               aria-label="Leave meeting"
-              className="flex items-center gap-2 rounded-full bg-[#DC2626] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 hover:bg-[#B91C1C] active:scale-95"
+              icon={<PhoneOff className="h-4 w-4" />}
             >
-              <PhoneOff className="h-4 w-4" />
               Leave
-            </button>
+            </Button>
           )}
         </div>
       </footer>
     </>
-  );
-}
-
-// ── Reusable control button ─────────────────────────────────────────
-interface ControlButtonProps {
-  onClick: () => void;
-  active: boolean;
-  activeLabel: string;
-  inactiveLabel: string;
-  activeIcon: React.ReactNode;
-  inactiveIcon: React.ReactNode;
-  danger?: boolean;
-  highlight?: boolean;
-}
-
-function ControlButton({
-  onClick,
-  active,
-  activeLabel,
-  inactiveLabel,
-  activeIcon,
-  inactiveIcon,
-  danger,
-  highlight,
-}: ControlButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      aria-label={active ? activeLabel : inactiveLabel}
-      className={cn(
-        "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-150 active:scale-95",
-        danger && !active
-          ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]"
-          : highlight && active
-          ? "bg-[#1A73E8]/20 text-[#1A73E8] hover:bg-[#1A73E8]/30"
-          : "bg-white/10 text-white hover:bg-white/20"
-      )}
-    >
-      {active ? activeIcon : inactiveIcon}
-    </button>
   );
 }

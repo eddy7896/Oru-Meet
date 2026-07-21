@@ -13,6 +13,7 @@
   /* Neutral Scale */
   --color-background:     #FFFFFF;
   --color-surface:        #F9FAFB;
+  --color-surface-container:#F3F4F6;
   --color-border:         #E5E7EB;
   --color-border-subtle:  #F3F4F6;
 
@@ -42,6 +43,45 @@
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-soft: 0 20px 40px -15px rgba(0,0,0,0.05);
+  --shadow-glow: 0 0 20px rgba(26, 115, 232, 0.15);
+
+  /* Animations */
+  --animate-fade-in-up: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-float: float 6s ease-in-out infinite;
+  
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+}
+
+/* ── Dark Mode (Meeting Room) ──────────────────────────────────────────────── */
+.room-theme {
+  --color-background:     #202124;
+  --color-surface:        #28292C;
+  --color-surface-container:#3C4043;
+  --color-border:         #3C4043;
+  --color-border-subtle:  #3C4043;
+
+  --color-text-primary:   #E8EAED;
+  --color-text-secondary: #9AA0A6;
+  --color-text-tertiary:  #80868B;
+  --color-text-inverse:   #202124;
+
+  --color-primary:        #8AB4F8;
+  --color-primary-hover:  #aecbfa;
+  --color-primary-light:  rgba(138, 180, 248, 0.12);
 }
 
 /* ── Base Reset ────────────────────────────────────────────────────────────── */
@@ -96,3 +136,35 @@ body {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ── LiveKit Overrides (Google Meet Style) ─────────────────────────────────── */
+.lk-participant-tile {
+  border-radius: var(--radius-xl) !important;
+  background-color: var(--color-surface-container) !important;
+  overflow: hidden !important;
+  transition: box-shadow 0.2s ease, outline 0.2s ease !important;
+  box-shadow: var(--shadow-sm) !important;
+  /* Instead of a tiny ring, we use an inner outline/border for speaking */
+  outline: 3px solid transparent;
+  outline-offset: -3px;
+}
+
+.lk-participant-tile.lk-speaking {
+  outline-color: var(--color-primary) !important;
+}
+
+/* Make sure the video itself fills the rounded tile */
+.lk-participant-tile video {
+  border-radius: var(--radius-xl) !important;
+  object-fit: cover !important;
+}
+
+/* Name tag and connection quality pill styling */
+.lk-participant-metadata {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 4px 8px !important;
+  margin: 8px !important;
+}
+

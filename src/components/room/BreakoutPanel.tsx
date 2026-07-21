@@ -135,15 +135,15 @@ export default function BreakoutPanel({ roomId, roomCode, onClose }: BreakoutPan
 
   return (
     <aside
-      className="flex w-full md:w-[320px] shrink-0 flex-col border-l border-white/10 bg-[#111827]"
+      className="flex w-full md:w-[320px] shrink-0 flex-col border-l border-border bg-[#111827]"
       aria-label="Breakout Rooms panel"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <h2 className="text-sm font-semibold text-white">Breakout Rooms</h2>
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <h2 className="text-sm font-semibold text-text-primary">Breakout Rooms</h2>
         <button
           onClick={onClose}
-          className="rounded-lg p-1 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+          className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -152,19 +152,19 @@ export default function BreakoutPanel({ roomId, roomCode, onClose }: BreakoutPan
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {/* Create Room */}
         <div className="space-y-2">
-          <label className="text-xs font-medium text-white/70">Create a new room</label>
+          <label className="text-xs font-medium text-text-secondary">Create a new room</label>
           <div className="flex gap-2">
             <input
               type="text"
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               placeholder="e.g. Team Alpha"
-              className="flex-1 rounded-lg border border-white/20 bg-white/5 px-3 py-1.5 text-sm text-white placeholder-white/30 outline-none focus:border-[#1A73E8]"
+              className="flex-1 rounded-lg border border-border bg-surface-container px-3 py-1.5 text-sm text-text-primary placeholder-white/30 outline-none focus:border-[#1A73E8]"
             />
             <button
               onClick={handleCreateRoom}
               disabled={isCreating || !newRoomName.trim()}
-              className="flex items-center justify-center rounded-lg bg-[#1A73E8] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#1557B0] disabled:opacity-50"
+              className="flex items-center justify-center rounded-lg bg-[#1A73E8] px-3 py-1.5 text-sm font-medium text-text-primary hover:bg-[#1557B0] disabled:opacity-50"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -174,17 +174,17 @@ export default function BreakoutPanel({ roomId, roomCode, onClose }: BreakoutPan
         {/* Assignments */}
         {breakoutRooms.length > 0 && (
           <div className="space-y-3">
-            <label className="text-xs font-medium text-white/70">Assign Participants</label>
+            <label className="text-xs font-medium text-text-secondary">Assign Participants</label>
             <div className="space-y-2">
               {participants.filter(p => p.role !== 'host').map((p) => {
                 const assignedBrId = assignments.find((a) => a.user_id === p.user_id)?.breakout_room_id || "";
                 return (
-                  <div key={p.id} className="flex flex-col gap-1 rounded-lg border border-white/10 bg-white/5 p-3">
-                    <span className="text-sm text-white">{p.profiles?.full_name || "Unknown"}</span>
+                  <div key={p.id} className="flex flex-col gap-1 rounded-lg border border-border bg-surface-container p-3">
+                    <span className="text-sm text-text-primary">{p.profiles?.full_name || "Unknown"}</span>
                     <select
                       value={assignedBrId}
                       onChange={(e) => handleAssign(p.user_id, e.target.value || null)}
-                      className="w-full rounded-md border border-white/20 bg-[#111827] px-2 py-1 text-xs text-white outline-none"
+                      className="w-full rounded-md border border-border bg-[#111827] px-2 py-1 text-xs text-text-primary outline-none"
                     >
                       <option value="">Main Room</option>
                       {breakoutRooms.map((br) => (
@@ -197,7 +197,7 @@ export default function BreakoutPanel({ roomId, roomCode, onClose }: BreakoutPan
                 );
               })}
               {participants.filter(p => p.role !== 'host').length === 0 && (
-                <p className="text-xs text-white/40 italic">No participants to assign.</p>
+                <p className="text-xs text-text-secondary italic">No participants to assign.</p>
               )}
             </div>
           </div>
@@ -206,11 +206,11 @@ export default function BreakoutPanel({ roomId, roomCode, onClose }: BreakoutPan
 
       {/* Start Button */}
       {breakoutRooms.length > 0 && (
-        <div className="border-t border-white/10 p-4">
+        <div className="border-t border-border p-4">
           <button
             onClick={handleToggleBreakouts}
             disabled={isStarting}
-            className={`w-full rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors disabled:opacity-50 ${
+            className={`w-full rounded-xl px-4 py-2.5 text-sm font-medium text-text-primary transition-colors disabled:opacity-50 ${
               isBreakoutsActive ? "bg-[#DC2626] hover:bg-[#B91C1C]" : "bg-[#1A73E8] hover:bg-[#1557B0]"
             }`}
           >

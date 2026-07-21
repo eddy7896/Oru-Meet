@@ -95,14 +95,14 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[#374151] bg-[#1F2937] shadow-xl">
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-white" />
-            <h2 className="text-base font-semibold text-white">Settings</h2>
+            <Settings className="h-5 w-5 text-text-primary" />
+            <h2 className="text-base font-semibold text-text-primary">Settings</h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-1 text-text-secondary transition-colors hover:bg-surface-container hover:text-text-primary"
           >
             <X className="h-5 w-5" />
           </button>
@@ -111,14 +111,14 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
         <div className="space-y-6 p-6">
           {/* Camera Selection */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-white/90">
+            <label className="flex items-center gap-2 text-sm font-medium text-text-secondary">
               <Camera className="h-4 w-4" />
               Camera
             </label>
             <select
               value={activeVideo}
               onChange={(e) => handleVideoChange(e.target.value)}
-              className="w-full rounded-xl border border-[#374151] bg-[#111827] px-4 py-2.5 text-sm text-white outline-none focus:border-[#1A73E8]"
+              className="w-full rounded-xl border border-[#374151] bg-[#111827] px-4 py-2.5 text-sm text-text-primary outline-none focus:border-[#1A73E8]"
             >
               {videoDevices.map((d) => (
                 <option key={d.deviceId} value={d.deviceId}>
@@ -130,14 +130,14 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
 
           {/* Microphone Selection */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-white/90">
+            <label className="flex items-center gap-2 text-sm font-medium text-text-secondary">
               <Mic className="h-4 w-4" />
               Microphone
             </label>
             <select
               value={activeAudio}
               onChange={(e) => handleAudioChange(e.target.value)}
-              className="w-full rounded-xl border border-[#374151] bg-[#111827] px-4 py-2.5 text-sm text-white outline-none focus:border-[#1A73E8]"
+              className="w-full rounded-xl border border-[#374151] bg-[#111827] px-4 py-2.5 text-sm text-text-primary outline-none focus:border-[#1A73E8]"
             >
               {audioDevices.map((d) => (
                 <option key={d.deviceId} value={d.deviceId}>
@@ -147,15 +147,15 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             </select>
           </div>
 
-          <div className="my-4 h-px w-full bg-white/10" />
+          <div className="my-4 h-px w-full bg-surface-container" />
 
           {/* Video Effects */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-white/90">Video Effects</h3>
-            <label className="flex cursor-pointer items-center justify-between rounded-xl border border-white/5 bg-white/5 p-4 hover:bg-white/10">
+            <h3 className="text-sm font-medium text-text-secondary">Video Effects</h3>
+            <label className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface-container p-4 hover:bg-surface-container">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium text-white">Background Blur</p>
-                <p className="text-xs text-white/50">Blur your surroundings</p>
+                <p className="text-sm font-medium text-text-primary">Background Blur</p>
+                <p className="text-xs text-text-secondary">Blur your surroundings</p>
               </div>
               <div
                 onClick={(e) => {
@@ -163,7 +163,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                   toggleBlur();
                 }}
                 className={`relative h-6 w-11 rounded-full transition-colors ${
-                  isBlurActive ? "bg-[#1A73E8]" : "bg-white/20"
+                  isBlurActive ? "bg-[#1A73E8]" : "bg-surface-container"
                 }`}
               >
                 <div

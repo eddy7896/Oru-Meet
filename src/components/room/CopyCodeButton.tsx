@@ -22,7 +22,7 @@ export default function CopyCodeButton({ code }: CopyCodeButtonProps) {
       id="copy-meeting-link-btn"
       onClick={handleCopy}
       aria-label="Copy meeting link"
-      className="rounded p-0.5 text-white/40 hover:text-white/70 transition-colors"
+      className="rounded p-0.5 text-text-secondary hover:text-text-secondary transition-colors"
     >
       {copied ? (
         <Check className="h-3 w-3 text-green-400" />

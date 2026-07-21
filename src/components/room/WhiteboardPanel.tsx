@@ -16,16 +16,16 @@ interface WhiteboardPanelProps {
 export default function WhiteboardPanel({ onClose }: WhiteboardPanelProps) {
   return (
     <aside
-      className="flex w-full md:w-[400px] shrink-0 flex-col border-l border-white/10 bg-[#111827]"
+      className="flex w-full md:w-[400px] shrink-0 flex-col border-l border-border bg-[#111827]"
       aria-label="Whiteboard panel"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <h2 className="text-sm font-semibold text-white">Whiteboard</h2>
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <h2 className="text-sm font-semibold text-text-primary">Whiteboard</h2>
         <button
           onClick={onClose}
           aria-label="Close whiteboard"
-          className="rounded-lg p-1 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+          className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors"
         >
           <X className="h-4 w-4" />
         </button>

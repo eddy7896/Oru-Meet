@@ -101,21 +101,21 @@ export default function ParticipantsPanel({
 
   return (
     <aside
-      className="flex w-full md:w-[320px] shrink-0 flex-col border-l border-white/10 bg-[#111827]"
+      className="flex w-full md:w-[320px] shrink-0 flex-col border-l border-border bg-[#111827]"
       aria-label="Participants panel"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <h2 className="text-sm font-semibold text-white">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <h2 className="text-sm font-semibold text-text-primary">
           Participants
-          <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-xs font-normal text-white/60">
+          <span className="ml-2 rounded-full bg-surface-container px-2 py-0.5 text-xs font-normal text-text-secondary">
             {participants.length}
           </span>
         </h2>
         <button
           onClick={onClose}
           aria-label="Close participants list"
-          className="rounded-lg p-1 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+          className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -123,19 +123,19 @@ export default function ParticipantsPanel({
 
       {/* Waiting Room */}
       {isHost && waiting.length > 0 && (
-        <div className="border-b border-white/10 px-4 py-3">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">
+        <div className="border-b border-border px-4 py-3">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
             Waiting in Lobby ({waiting.length})
           </h3>
           <div className="flex flex-col gap-2">
             {waiting.map((w) => (
-              <div key={w.id} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
-                <span className="text-sm text-white/90 truncate mr-2">
+              <div key={w.id} className="flex items-center justify-between rounded-lg bg-surface-container px-3 py-2">
+                <span className="text-sm text-text-secondary truncate mr-2">
                   {w.profiles?.full_name || "Guest"}
                 </span>
                 <button
                   onClick={() => handleAdmit(w.id)}
-                  className="flex h-7 items-center gap-1 rounded bg-[#16A34A] px-2 text-xs font-medium text-white hover:bg-[#15803D] transition-colors"
+                  className="flex h-7 items-center gap-1 rounded bg-[#16A34A] px-2 text-xs font-medium text-text-primary hover:bg-[#15803D] transition-colors"
                 >
                   <Check className="h-3 w-3" />
                   Admit
@@ -214,20 +214,20 @@ function ParticipantRow({
   return (
     <div
       className={cn(
-        "group flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors",
+        "group flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors",
         isLocal && "bg-white/[0.03]"
       )}
     >
       {/* Avatar */}
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#374151] text-sm font-semibold text-white">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#374151] text-sm font-semibold text-text-primary">
         {displayName.charAt(0).toUpperCase()}
       </div>
 
       {/* Name + "You" badge */}
       <div className="flex flex-1 items-center gap-1.5 overflow-hidden">
-        <span className="truncate text-sm text-white/90">{displayName}</span>
+        <span className="truncate text-sm text-text-secondary">{displayName}</span>
         {isLocal && (
-          <span className="shrink-0 text-[10px] text-white/40">(you)</span>
+          <span className="shrink-0 text-[10px] text-text-secondary">(you)</span>
         )}
         {participantIsHost && (
           <Crown className="h-3 w-3 shrink-0 text-[#FBBF24]" aria-label="Host" />
@@ -242,12 +242,12 @@ function ParticipantRow({
         {isMicMuted ? (
           <MicOff className="h-3.5 w-3.5 text-[#DC2626]" aria-label="Microphone muted" />
         ) : (
-          <Mic className="h-3.5 w-3.5 text-white/40" aria-label="Microphone active" />
+          <Mic className="h-3.5 w-3.5 text-text-secondary" aria-label="Microphone active" />
         )}
         {isCamOff ? (
           <VideoOff className="h-3.5 w-3.5 text-[#DC2626]" aria-label="Camera off" />
         ) : (
-          <Video className="h-3.5 w-3.5 text-white/40" aria-label="Camera on" />
+          <Video className="h-3.5 w-3.5 text-text-secondary" aria-label="Camera on" />
         )}
       </div>
 
@@ -259,7 +259,7 @@ function ParticipantRow({
             disabled={isActionPending || isMicMuted}
             aria-label={`Mute ${displayName}`}
             title={`Mute ${displayName}`}
-            className="rounded p-1 text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-50"
+            className="rounded p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50"
           >
             <MicOff className="h-3.5 w-3.5" />
           </button>
@@ -268,7 +268,7 @@ function ParticipantRow({
             disabled={isActionPending}
             aria-label={`Remove ${displayName}`}
             title={`Remove ${displayName}`}
-            className="rounded p-1 text-white/40 hover:bg-[#DC2626]/20 hover:text-[#DC2626] disabled:opacity-50"
+            className="rounded p-1 text-text-secondary hover:bg-[#DC2626]/20 hover:text-[#DC2626] disabled:opacity-50"
           >
             <UserX className="h-3.5 w-3.5" />
           </button>

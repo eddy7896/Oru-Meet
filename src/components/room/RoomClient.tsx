@@ -110,8 +110,8 @@ export default function RoomClient({
   if (!isLoaded || isLoadingRoom || isLoadingToken) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-white/40" />
-        <p className="text-sm text-white/50">Connecting to room…</p>
+        <Loader2 className="h-8 w-8 animate-spin text-text-secondary" />
+        <p className="text-sm text-text-secondary">Connecting to room…</p>
       </div>
     );
   }
@@ -124,8 +124,8 @@ export default function RoomClient({
           <AlertCircle className="h-7 w-7 text-[#DC2626]" />
         </div>
         <div className="text-center space-y-1">
-          <p className="text-sm font-medium text-white">Failed to connect</p>
-          <p className="text-xs text-white/50">
+          <p className="text-sm font-medium text-text-primary">Failed to connect</p>
+          <p className="text-xs text-text-secondary">
             {roomError ?? tokenError ?? "LiveKit server URL is not configured."}
           </p>
         </div>
@@ -144,6 +144,11 @@ export default function RoomClient({
       className="flex flex-1 flex-col overflow-hidden"
       onDisconnected={() => router.push("/")}
       onError={(error) => console.error("[LiveKitRoom] Error:", error)}
+      onMediaDeviceFailure={(error, kind) => {
+        console.warn(`[LiveKitRoom] Media device failure (${kind}):`, error);
+        // We catch this to prevent the unhandled NotAllowedError from crashing the app.
+        // The user can manually try turning on their camera/mic from the control bar later.
+      }}
     >
       <RoomAudioRenderer />
 

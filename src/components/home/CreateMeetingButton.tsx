@@ -48,15 +48,18 @@ export default function CreateMeetingButton() {
         id="create-meeting-btn"
         onClick={handleCreate}
         disabled={loading}
-        className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#1A73E8] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-[#1557B0] hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        className="group relative flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#1A73E8] to-[#2563EB] px-6 py-4 text-[15px] font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:-translate-y-0 disabled:hover:shadow-soft"
         aria-label="Start a new meeting"
       >
+        <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="relative z-10 h-5 w-5 animate-spin" />
         ) : (
-          <Video className="h-4 w-4" />
+          <Video className="relative z-10 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
         )}
-        {loading ? "Creating room…" : "Start a Meeting"}
+        <span className="relative z-10">
+          {loading ? "Creating room…" : "Start a Meeting"}
+        </span>
       </button>
 
       {error && (
