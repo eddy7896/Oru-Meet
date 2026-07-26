@@ -280,7 +280,7 @@ export default function RoomClient({
             <PollsPanel roomId={room.id} roomCode={roomId} isHost={role === "host"} onClose={() => setActivePanel(null)} />
           )}
           {activePanel === "whiteboard" && (
-            <WhiteboardPanel onClose={() => setActivePanel(null)} />
+            <WhiteboardPanel roomId={room.id} onClose={() => setActivePanel(null)} />
           )}
           {activePanel === "breakouts" && role === "host" && (
             <BreakoutPanel roomId={room.id} roomCode={roomId} onClose={() => setActivePanel(null)} />

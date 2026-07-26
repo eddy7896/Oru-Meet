@@ -28,6 +28,8 @@
     "svix": "^1.98.0",
     "tailwind-merge": "^3.6.0",
     "tldraw": "^5.2.5",
+    "y-webrtc": "^10.3.0",
+    "yjs": "^13.6.31",
     "zod": "^4.4.3"
   },
   "devDependencies": {
