@@ -141,7 +141,7 @@ export default function RoomClient({
       serverUrl={serverUrl}
       connect={true}
       video={initialCamEnabled}
-      className="absolute inset-0 flex bg-[#FAFAFA] overflow-hidden"
+      className="fixed inset-0 flex bg-[#FAFAFA] overflow-hidden"
       onDisconnected={() => router.push("/")}
       onError={(error) => console.error("[LiveKitRoom] Error:", error)}
     >
@@ -223,8 +223,8 @@ export default function RoomClient({
       </aside>
 
       {/* 2. Center Content (Main Stage) */}
-      <main className="flex-1 h-full flex flex-col p-0 md:p-6 relative overflow-hidden bg-black md:bg-transparent min-h-0 min-w-0">
-        <div className="flex-1 h-full bg-white md:rounded-[2rem] shadow-sm md:border border-[#E5E7EB] flex flex-col overflow-hidden relative p-4 pb-28 md:p-6 md:pb-6 min-h-0 min-w-0">
+      <main className="flex-1 flex flex-col p-0 md:p-6 overflow-hidden bg-black md:bg-transparent min-h-0 min-w-0">
+        <div className="flex-1 bg-white md:rounded-[2rem] shadow-sm md:border border-[#E5E7EB] flex flex-col overflow-hidden relative p-4 pb-28 md:p-6 md:pb-6 min-h-0 min-w-0">
           
           {/* Header */}
           <div className="flex justify-between items-start md:items-center mb-4 px-2 flex-col md:flex-row gap-4 shrink-0">
@@ -246,10 +246,8 @@ export default function RoomClient({
           </div>
 
           {/* Video Grid */}
-          <div className="flex-1 relative overflow-hidden rounded-[1.5rem] min-h-0 min-w-0">
-            <div className="absolute inset-0">
-              <VideoGrid />
-            </div>
+          <div className="flex-1 overflow-hidden rounded-[1.5rem] min-h-0 min-w-0">
+            <VideoGrid />
           </div>
 
           {/* Control Bar (Handles its own positioning) */}
