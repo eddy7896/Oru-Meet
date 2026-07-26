@@ -121,30 +121,32 @@ export default function LobbyClient({
     });
   }
 
-  // Listen for admission if waiting
+  // Poll for admission if waiting
   useEffect(() => {
     if (!isWaiting || !room || !user) return;
     
-    const channel = supabase
-      .channel(`wait:${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "participants",
-          filter: `room_id=eq.${room.id}`,
-        },
-        (payload) => {
-          if (payload.new.user_id === user.id && payload.new.is_admitted) {
-            router.push(`/room/${roomId}?cam=${camEnabled}&mic=${micEnabled}&role=${role}`);
-          }
-        }
-      )
-      .subscribe();
+    let isMounted = true;
+    
+    const checkAdmission = async () => {
+      const { data } = await supabase
+        .from("participants")
+        .select("is_admitted")
+        .eq("room_id", room.id)
+        .eq("user_id", user.id)
+        .single();
+        
+      if (isMounted && data?.is_admitted) {
+        router.push(`/room/${roomId}?cam=${camEnabled}&mic=${micEnabled}&role=${role}`);
+      }
+    };
+
+    // Check immediately, then every 3 seconds
+    checkAdmission();
+    const interval = setInterval(checkAdmission, 3000);
 
     return () => {
-      supabase.removeChannel(channel);
+      isMounted = false;
+      clearInterval(interval);
     };
   }, [isWaiting, room, user, router, roomId, camEnabled, micEnabled, role, supabase]);
 

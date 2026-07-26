@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useRoomContext } from "@livekit/components-react";
+import { DataPacket_Kind } from "livekit-client";
 
 export interface ChatMessage {
   id: string;
@@ -30,9 +32,10 @@ export function useChat(roomId: string): UseChatReturn {
   const [error, setError] = useState<string | null>(null);
 
   const supabase = createClient();
+  const room = useRoomContext();
 
+  // 1. Fetch initial message history
   useEffect(() => {
-    // 1. Fetch initial message history
     supabase
       .from("messages")
       .select(`
@@ -53,46 +56,35 @@ export function useChat(roomId: string): UseChatReturn {
         }
         setIsLoading(false);
       });
+  }, [roomId, supabase]);
 
-    // 2. Subscribe to new messages
-    const channel = supabase
-      .channel(`chat:${roomId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `room_id=eq.${roomId}`,
-        },
-        async (payload) => {
-          const newMessage = payload.new as ChatMessage;
+  // 2. Listen to LiveKit Data Channel for real-time messages
+  useEffect(() => {
+    if (!room) return;
 
-          // Fetch the profile for the new message since Realtime payloads
-          // don't include joined relations automatically
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("full_name, avatar_url")
-            .eq("id", newMessage.sender_id)
-            .single();
-
-          if (profile) {
-            newMessage.profiles = profile;
-          }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleDataReceived = (payload: Uint8Array, participant: any, kind: any, topic?: string) => {
+      if (topic === "chat_message") {
+        try {
+          const str = new TextDecoder().decode(payload);
+          const newMessage = JSON.parse(str) as ChatMessage;
 
           setMessages((prev) => {
-            // Deduplicate in case our own insert returned faster
             if (prev.some((m) => m.id === newMessage.id)) return prev;
             return [...prev, newMessage];
           });
+        } catch (err) {
+          console.error("Failed to parse chat message payload", err);
         }
-      )
-      .subscribe();
+      }
+    };
+
+    room.on("dataReceived", handleDataReceived);
 
     return () => {
-      supabase.removeChannel(channel);
+      room.off("dataReceived", handleDataReceived);
     };
-  }, [roomId, supabase]);
+  }, [room]);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -101,6 +93,7 @@ export function useChat(roomId: string): UseChatReturn {
       setError(null);
 
       try {
+        // Persist to DB first
         const response = await fetch("/api/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -113,18 +106,27 @@ export function useChat(roomId: string): UseChatReturn {
 
         const { message } = await response.json();
         
-        // Optimistically add to list (Realtime will deduplicate)
+        // Optimistically add to local list
         setMessages((prev) => {
           if (prev.some((m) => m.id === message.id)) return prev;
           return [...prev, message as ChatMessage];
         });
+
+        // Broadcast over LiveKit Data Channel to peers instantly
+        if (room) {
+          const payload = new TextEncoder().encode(JSON.stringify(message));
+          await room.localParticipant.publishData(payload, {
+            reliable: true,
+            topic: "chat_message",
+          });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error sending message");
       } finally {
         setIsSending(false);
       }
     },
-    [roomId]
+    [roomId, room]
   );
 
   return { messages, isLoading, isSending, error, sendMessage };

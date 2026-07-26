@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@clerk/nextjs";
+import { useRoomContext } from "@livekit/components-react";
 import { CloseCircle, AddCircle, Trash, Chart, TickCircle } from "iconsax-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -51,55 +52,46 @@ export default function PollsPanel({
   const [options, setOptions] = useState([{ id: "1", text: "" }, { id: "2", text: "" }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch initial data
-  useEffect(() => {
-    async function fetchData() {
-      const { data: pData } = await supabase
-        .from("polls")
-        .select("*")
-        .eq("room_id", roomId)
-        .order("created_at", { ascending: false });
-      
-      if (pData) setPolls(pData);
+  const room = useRoomContext();
 
-      const { data: rData } = await supabase
-        .from("poll_responses")
-        .select("id, poll_id, user_id, option_id"); 
-      
-      if (rData && pData) {
-        // filter responses that belong to these polls
-        const pollIds = pData.map(p => p.id);
-        setResponses(rData.filter(r => pollIds.includes(r.poll_id)));
-      }
+  const fetchData = useCallback(async () => {
+    const { data: pData } = await supabase
+      .from("polls")
+      .select("*")
+      .eq("room_id", roomId)
+      .order("created_at", { ascending: false });
+    
+    if (pData) setPolls(pData);
+
+    const { data: rData } = await supabase
+      .from("poll_responses")
+      .select("id, poll_id, user_id, option_id"); 
+    
+    if (rData && pData) {
+      // filter responses that belong to these polls
+      const pollIds = pData.map(p => p.id);
+      setResponses(rData.filter(r => pollIds.includes(r.poll_id)));
     }
+  }, [roomId, supabase]);
 
+  // Fetch initial data and setup LiveKit Data Channel listener
+  useEffect(() => {
     fetchData();
 
-    // Subscribe to new polls
-    const pollSub = supabase
-      .channel(`polls:${roomId}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "polls", filter: `room_id=eq.${roomId}` }, (payload) => {
-        setPolls(prev => [payload.new as Poll, ...prev]);
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "polls", filter: `room_id=eq.${roomId}` }, (payload) => {
-        setPolls(prev => prev.map(p => p.id === payload.new.id ? payload.new as Poll : p));
-      })
-      .subscribe();
+    if (!room) return;
 
-    // Subscribe to new responses
-    const responseSub = supabase
-      .channel(`responses:${roomId}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "poll_responses" }, (payload) => {
-        // Only add if it's for one of our polls
-        setResponses(prev => [...prev, payload.new as PollResponse]);
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(pollSub);
-      supabase.removeChannel(responseSub);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleDataReceived = (payload: Uint8Array, participant: any, kind: any, topic?: string) => {
+      if (topic === "polls_updated") {
+        fetchData();
+      }
     };
-  }, [roomId, supabase]);
+
+    room.on("dataReceived", handleDataReceived);
+    return () => {
+      room.off("dataReceived", handleDataReceived);
+    };
+  }, [fetchData, room]);
 
   async function handleCreatePoll() {
     if (!question.trim() || options.some(o => !o.text.trim())) return;
@@ -114,9 +106,22 @@ export default function PollsPanel({
           options: options.map(o => ({ id: o.id, text: o.text.trim() }))
         })
       });
+
+      // Broadcast update to peers
+      if (room) {
+        const payload = new TextEncoder().encode("updated");
+        await room.localParticipant.publishData(payload, {
+          reliable: true,
+          topic: "polls_updated"
+        });
+      }
+
       setIsCreating(false);
       setQuestion("");
       setOptions([{ id: "1", text: "" }, { id: "2", text: "" }]);
+      
+      // Update our own view
+      fetchData();
     } finally {
       setIsSubmitting(false);
     }
@@ -226,6 +231,7 @@ export default function PollsPanel({
                     poll={poll}
                     responses={responses.filter(r => r.poll_id === poll.id)}
                     userId={user?.id}
+                    onVoteCast={fetchData}
                   />
                 ))}
               </div>
@@ -238,10 +244,11 @@ export default function PollsPanel({
 }
 
 // -- Subcomponent for individual poll --
-function PollCard({ poll, responses, userId }: { poll: Poll; responses: PollResponse[]; userId?: string }) {
+function PollCard({ poll, responses, userId, onVoteCast }: { poll: Poll; responses: PollResponse[]; userId?: string; onVoteCast: () => void }) {
   const [isVoting, setIsVoting] = useState(false);
   const totalVotes = responses.length;
   const userVote = responses.find(r => r.user_id === userId);
+  const room = useRoomContext();
 
   async function handleVote(optionId: string) {
     if (userVote || !poll.is_active) return;
@@ -252,6 +259,17 @@ function PollCard({ poll, responses, userId }: { poll: Poll; responses: PollResp
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pollId: poll.id, optionId })
       });
+      
+      // Broadcast update to peers
+      if (room) {
+        const payload = new TextEncoder().encode("updated");
+        await room.localParticipant.publishData(payload, {
+          reliable: true,
+          topic: "polls_updated"
+        });
+      }
+      
+      onVoteCast();
     } finally {
       setIsVoting(false);
     }

@@ -54,6 +54,7 @@ export default function ParticipantsPanel({
 
   useEffect(() => {
     if (!isHost) return;
+    let isMounted = true;
 
     function fetchWaiting() {
       supabase
@@ -66,28 +67,17 @@ export default function ParticipantsPanel({
         .eq("room_id", roomId)
         .eq("is_admitted", false)
         .then(({ data }) => {
-          if (data) setWaiting(data as unknown as WaitingParticipant[]);
+          if (isMounted && data) setWaiting(data as unknown as WaitingParticipant[]);
         });
     }
 
     fetchWaiting();
 
-    const channel = supabase
-      .channel(`waiting:${roomId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "participants",
-          filter: `room_id=eq.${roomId}`,
-        },
-        () => fetchWaiting()
-      )
-      .subscribe();
+    const intervalId = setInterval(fetchWaiting, 3000);
 
     return () => {
-      supabase.removeChannel(channel);
+      isMounted = false;
+      clearInterval(intervalId);
     };
   }, [isHost, roomId, supabase]);
 

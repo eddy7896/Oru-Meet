@@ -11,8 +11,7 @@ interface UseRoomReturn {
 }
 
 /**
- * useRoom — subscribes to a room record in Supabase Realtime.
- * Reactively reflects status changes (e.g., host ending the meeting).
+ * useRoom — fetches room data and polls for updates every 3 seconds.
  */
 export function useRoom(roomCode: string): UseRoomReturn {
   const [room, setRoom] = useState<Room | null>(null);
@@ -21,41 +20,34 @@ export function useRoom(roomCode: string): UseRoomReturn {
 
   useEffect(() => {
     const supabase = createClient();
+    let isMounted = true;
+
+    const fetchRoom = async () => {
+      const { data, error: fetchError } = await supabase
+        .from("rooms")
+        .select("*")
+        .eq("code", roomCode)
+        .single();
+
+      if (!isMounted) return;
+
+      if (fetchError || !data) {
+        setError("Room not found");
+      } else {
+        setRoom(data as Room);
+      }
+      setIsLoading(false);
+    };
 
     // Initial fetch
-    supabase
-      .from("rooms")
-      .select("*")
-      .eq("code", roomCode)
-      .single()
-      .then(({ data, error: fetchError }) => {
-        if (fetchError || !data) {
-          setError("Room not found");
-        } else {
-          setRoom(data as Room);
-        }
-        setIsLoading(false);
-      });
+    fetchRoom();
 
-    // Subscribe to real-time updates on this room
-    const channel = supabase
-      .channel(`room:${roomCode}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "rooms",
-          filter: `code=eq.${roomCode}`,
-        },
-        (payload) => {
-          setRoom(payload.new as Room);
-        }
-      )
-      .subscribe();
+    // Poll for updates every 3 seconds instead of using Supabase Realtime
+    const intervalId = setInterval(fetchRoom, 3000);
 
     return () => {
-      supabase.removeChannel(channel);
+      isMounted = false;
+      clearInterval(intervalId);
     };
   }, [roomCode]);
 
