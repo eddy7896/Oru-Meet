@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParticipants, useLocalParticipant, useDataChannel } from "@livekit/components-react";
 import { Participant } from "livekit-client";
 import { createClient } from "@/lib/supabase/client";
-import { Mic, MicOff, Video, VideoOff, Crown, X, UserX, Hand, Check, Loader2 } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, Crown, X, UserX, Hand, Check, Loader2, MoreVertical, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 interface WaitingParticipant {
@@ -172,39 +172,61 @@ function ParticipantRow({
   const isMicMuted = !participant.isMicrophoneEnabled;
   const isCamOff = !participant.isCameraEnabled;
   const displayName = participant.name ?? participant.identity;
+  
   // The host is typically the one with roomAdmin permission
-  const participantIsHost = participant.permissions?.canPublishSources !== undefined
-    ? false
-    : false; // Simplified — full role tracking needs metadata
+  const participantIsHost = participant.permissions?.roomAdmin === true;
     
   const [isActionPending, setIsActionPending] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   async function handleMuteParticipant() {
     setIsActionPending(true);
     try {
-      await fetch(`/api/rooms/${roomCode}/participants/${participant.identity}/mute`, {
-        method: "POST",
-      });
+      await fetch(`/api/rooms/${roomCode}/participants/${participant.identity}/mute`, { method: "POST" });
     } finally {
       setIsActionPending(false);
+      setShowMenu(false);
+    }
+  }
+
+  async function handleTurnCameraOff() {
+    setIsActionPending(true);
+    try {
+      await fetch(`/api/rooms/${roomCode}/participants/${participant.identity}/turn-camera-off`, { method: "POST" });
+    } finally {
+      setIsActionPending(false);
+      setShowMenu(false);
     }
   }
   
   async function handleKickParticipant() {
     setIsActionPending(true);
     try {
-      await fetch(`/api/rooms/${roomCode}/participants/${participant.identity}/kick`, {
-        method: "POST",
+      await fetch(`/api/rooms/${roomCode}/participants/${participant.identity}/kick`, { method: "POST" });
+    } finally {
+      setIsActionPending(false);
+      setShowMenu(false);
+    }
+  }
+
+  async function handleRoleChange(role: string) {
+    setIsActionPending(true);
+    try {
+      await fetch(`/api/rooms/${roomCode}/participants/${participant.identity}/role`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role }),
       });
     } finally {
       setIsActionPending(false);
+      setShowMenu(false);
     }
   }
 
   return (
     <div
       className={cn(
-        "group flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors",
+        "group flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors relative",
         isLocal && "bg-white/[0.03]"
       )}
     >
@@ -241,27 +263,66 @@ function ParticipantRow({
         )}
       </div>
 
-      {/* Host-only actions (shown on hover, hidden for self) */}
+      {/* Host-only actions menu */}
       {isHost && !isLocal && (
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="relative">
           <button
-            onClick={handleMuteParticipant}
-            disabled={isActionPending || isMicMuted}
-            aria-label={`Mute ${displayName}`}
-            title={`Mute ${displayName}`}
-            className="rounded p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50"
-          >
-            <MicOff className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={handleKickParticipant}
+            onClick={() => setShowMenu(!showMenu)}
             disabled={isActionPending}
-            aria-label={`Remove ${displayName}`}
-            title={`Remove ${displayName}`}
-            className="rounded p-1 text-text-secondary hover:bg-[#DC2626]/20 hover:text-[#DC2626] disabled:opacity-50"
+            className="rounded p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="More options"
           >
-            <UserX className="h-3.5 w-3.5" />
+            <MoreVertical className="h-4 w-4" />
           </button>
+
+          {showMenu && (
+            <>
+              {/* Invisible backdrop to close menu */}
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowMenu(false)} 
+              />
+              <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-lg border border-border bg-[#1F2937] p-1 shadow-lg">
+                <button
+                  onClick={handleMuteParticipant}
+                  disabled={isActionPending || isMicMuted}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                >
+                  <MicOff className="h-4 w-4" /> Mute Microphone
+                </button>
+                <button
+                  onClick={handleTurnCameraOff}
+                  disabled={isActionPending || isCamOff}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                >
+                  <VideoOff className="h-4 w-4" /> Turn Camera Off
+                </button>
+                <div className="my-1 h-px w-full bg-border" />
+                <button
+                  onClick={() => handleRoleChange("host")}
+                  disabled={isActionPending || participantIsHost}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                >
+                  <Crown className="h-4 w-4" /> Make Host
+                </button>
+                <button
+                  onClick={() => handleRoleChange("co_host")}
+                  disabled={isActionPending}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                >
+                  <ShieldCheck className="h-4 w-4" /> Make Co-Host
+                </button>
+                <div className="my-1 h-px w-full bg-border" />
+                <button
+                  onClick={handleKickParticipant}
+                  disabled={isActionPending}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-[#DC2626] hover:bg-[#DC2626]/10 text-left"
+                >
+                  <UserX className="h-4 w-4" /> Remove from Meeting
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

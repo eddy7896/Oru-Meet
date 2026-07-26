@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     // roomName is the 'code' (e.g. abc-defg-hij), we need the UUID for participants table
     const { data: roomRecord, error: roomError } = await supabase
       .from("rooms")
-      .select("id")
+      .select("id, host_id, is_locked")
       .eq("code", roomName)
       .single();
 
@@ -62,9 +62,32 @@ export async function POST(request: NextRequest) {
 
     const roomUuid = roomRecord.id;
 
+    let isAdmitted = true;
+    if (userId !== roomRecord.host_id) {
+      const { data: hostProfile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", roomRecord.host_id)
+        .single();
+        
+      const hostEmail = hostProfile?.email || "";
+      const userEmail = user?.primaryEmailAddress?.emailAddress || "";
+      
+      const hostDomain = hostEmail.split("@")[1];
+      const userDomain = userEmail.split("@")[1];
+      
+      if (hostDomain && userDomain && hostDomain === userDomain) {
+        // Same organization -> automatically admit
+        isAdmitted = true;
+      } else {
+        // Different organization or missing emails -> wait in lobby
+        isAdmitted = false;
+      }
+    }
+
     const { data: existing } = await supabase
       .from("participants")
-      .select("id")
+      .select("id, is_admitted")
       .eq("room_id", roomUuid)
       .eq("user_id", userId)
       .single();
@@ -74,18 +97,23 @@ export async function POST(request: NextRequest) {
         room_id: roomUuid,
         user_id: userId,
         role,
-        is_admitted: true,
+        is_admitted: isAdmitted,
       });
     } else {
-      // Ensure they are admitted
-      await supabase
-        .from("participants")
-        .update({ is_admitted: true })
-        .eq("id", existing.id);
+      if (existing.is_admitted) {
+        isAdmitted = true;
+      }
     }
+
+    if (!isAdmitted) {
+      return NextResponse.json({ waiting: true }, { status: 403 });
+    }
+
   } catch (dbError) {
     console.error("[LiveKit Token] Failed to sync participant to DB:", dbError);
-    // Proceed to give token anyway, but some DB features might fail.
+    // Proceed to give token anyway if DB fails? No, if DB fails we can't verify admission.
+    // But since this is a catch block, we might fall through. Let's just return error.
+    return NextResponse.json({ error: "Failed to verify room admission" }, { status: 500 });
   }
 
   // 4. Generate token

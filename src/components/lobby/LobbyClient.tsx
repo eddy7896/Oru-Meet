@@ -100,23 +100,32 @@ export default function LobbyClient({
     setTimeout(() => setCopied(false), 2000);
   }
 
-  // -- Join room -------------------------------------------------------
   async function joinRoom() {
     startTransition(async () => {
-      if (room?.is_locked && role !== "host") {
-        setIsWaiting(true);
-        try {
-          await fetch("/api/participants", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ roomId: room.id, role }),
-          });
-        } catch (err) {
-          console.error("Failed to request access", err);
-          setIsWaiting(false);
-        }
-      } else {
+      if (role === "host") {
         router.push(`/room/${roomId}?cam=${camEnabled}&mic=${micEnabled}&role=${role}`);
+        return;
+      }
+
+      try {
+        const pName = user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? user?.id ?? "Guest";
+        const res = await fetch("/api/livekit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomName: roomId, participantName: pName, role }),
+        });
+
+        if (res.status === 403) {
+          const data = await res.json().catch(() => ({}));
+          if (data.waiting) {
+            setIsWaiting(true);
+            return;
+          }
+        }
+        
+        router.push(`/room/${roomId}?cam=${camEnabled}&mic=${micEnabled}&role=${role}`);
+      } catch (err) {
+        console.error("Failed to request access", err);
       }
     });
   }
