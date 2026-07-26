@@ -15,6 +15,7 @@ import ParticipantsPanel from "./ParticipantsPanel";
 import PollsPanel from "./PollsPanel";
 import WhiteboardPanel from "./WhiteboardPanel";
 import BreakoutPanel from "./BreakoutPanel";
+import { cn } from "@/lib/utils/cn";
 
 interface RoomClientProps {
   roomId: string;
