@@ -144,10 +144,17 @@ body {
 
 /* Name tag and connection quality pill styling */
 .lk-participant-metadata {
-  background: rgba(0, 0, 0, 0.5) !important;
+  background: rgba(0, 0, 0, 0.75) !important;
   backdrop-filter: blur(4px) !important;
   border-radius: var(--radius-md) !important;
   padding: 4px 8px !important;
   margin: 8px !important;
+  color: white !important;
 }
 
+.lk-participant-metadata-item,
+.lk-participant-name {
+  color: white !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
