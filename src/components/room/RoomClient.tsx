@@ -247,7 +247,9 @@ export default function RoomClient({
 
           {/* Video Grid */}
           <div className="flex-1 relative overflow-hidden rounded-[1.5rem] min-h-0 min-w-0">
-            <VideoGrid />
+            <div className="absolute inset-0">
+              <VideoGrid />
+            </div>
           </div>
 
           {/* Control Bar (Handles its own positioning) */}
