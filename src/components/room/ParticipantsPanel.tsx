@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useParticipants, useLocalParticipant, useDataChannel } from "@livekit/components-react";
 import { Participant } from "livekit-client";
 import { createClient } from "@/lib/supabase/client";
-import { Mic, MicOff, Video, VideoOff, Crown, X, UserX, Hand, Check, Loader2, MoreVertical, ShieldCheck } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, Crown, UserX, Hand, Check, Loader2, MoreVertical, ShieldCheck } from "lucide-react";
+import { CloseCircle } from "iconsax-react";
 import { cn } from "@/lib/utils/cn";
 
 interface WaitingParticipant {
@@ -91,43 +92,48 @@ export default function ParticipantsPanel({
 
   return (
     <aside
-      className="flex w-full md:w-[320px] shrink-0 flex-col border-l border-border bg-[#111827]"
+      className="flex h-full w-full md:w-[320px] shrink-0 flex-col bg-[#FAFAFA]"
       aria-label="Participants panel"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h2 className="text-sm font-semibold text-text-primary">
-          Participants
-          <span className="ml-2 rounded-full bg-surface-container px-2 py-0.5 text-xs font-normal text-text-secondary">
-            {participants.length}
-          </span>
-        </h2>
+      <div className="flex items-center justify-between border-b border-[#E5E7EB] px-6 py-5">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">
+            Participants
+            <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600">
+              {participants.length}
+            </span>
+          </h2>
+          <p className="text-xs text-slate-500 mt-1">
+            People currently in the meeting
+          </p>
+        </div>
         <button
           onClick={onClose}
           aria-label="Close participants list"
-          className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors"
+          className="text-slate-400 hover:text-slate-600 ml-4 shrink-0 transition-colors"
         >
-          <X className="h-4 w-4" />
+          <CloseCircle size={24} variant="Linear" />
         </button>
       </div>
 
       {/* Waiting Room */}
       {isHost && waiting.length > 0 && (
-        <div className="border-b border-border px-4 py-3">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+        <div className="border-b border-[#E5E7EB] px-6 py-4">
+          <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">
             Waiting in Lobby ({waiting.length})
           </h3>
           <div className="flex flex-col gap-2">
             {waiting.map((w) => (
-              <div key={w.id} className="flex items-center justify-between rounded-lg bg-surface-container px-3 py-2">
-                <span className="text-sm text-text-secondary truncate mr-2">
+              <div key={w.id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+                <span className="text-sm font-medium text-slate-900 truncate mr-2">
                   {w.profiles?.full_name || "Guest"}
                 </span>
                 <button
                   onClick={() => handleAdmit(w.id)}
-                  className="flex h-7 items-center gap-1 rounded bg-[#16A34A] px-2 text-xs font-medium text-text-primary hover:bg-[#15803D] transition-colors"
+                  className="flex h-7 items-center gap-1 rounded-md bg-[#16A34A] px-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#15803D] transition-colors"
                 >
-                  <Check className="h-3 w-3" />
+                  <Check className="h-3.5 w-3.5" />
                   Admit
                 </button>
               </div>
@@ -231,20 +237,20 @@ function ParticipantRow({
   return (
     <div
       className={cn(
-        "group flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors relative",
-        isLocal && "bg-white/[0.03]"
+        "group flex items-center gap-3 px-6 py-3 hover:bg-slate-50 transition-colors relative",
+        isLocal && "bg-blue-50/30"
       )}
     >
       {/* Avatar */}
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#374151] text-sm font-semibold text-text-primary">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-bold text-slate-600 shadow-sm">
         {displayName.charAt(0).toUpperCase()}
       </div>
 
       {/* Name + "You" badge */}
       <div className="flex flex-1 items-center gap-1.5 overflow-hidden">
-        <span className="truncate text-sm text-text-secondary">{displayName}</span>
+        <span className="truncate text-sm font-medium text-slate-900">{displayName}</span>
         {isLocal && (
-          <span className="shrink-0 text-[10px] text-text-secondary">(you)</span>
+          <span className="shrink-0 text-[10px] font-semibold text-slate-400">(you)</span>
         )}
         {participantIsHost && (
           <Crown className="h-3 w-3 shrink-0 text-[#FBBF24]" aria-label="Host" />
@@ -255,16 +261,16 @@ function ParticipantRow({
       </div>
 
       {/* Media state indicators */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         {isMicMuted ? (
           <MicOff className="h-3.5 w-3.5 text-[#DC2626]" aria-label="Microphone muted" />
         ) : (
-          <Mic className="h-3.5 w-3.5 text-text-secondary" aria-label="Microphone active" />
+          <Mic className="h-3.5 w-3.5 text-slate-400" aria-label="Microphone active" />
         )}
         {isCamOff ? (
           <VideoOff className="h-3.5 w-3.5 text-[#DC2626]" aria-label="Camera off" />
         ) : (
-          <Video className="h-3.5 w-3.5 text-text-secondary" aria-label="Camera on" />
+          <Video className="h-3.5 w-3.5 text-slate-400" aria-label="Camera on" />
         )}
       </div>
 
@@ -274,7 +280,7 @@ function ParticipantRow({
           <button
             onClick={() => setShowMenu(!showMenu)}
             disabled={isActionPending}
-            className="rounded p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-600 disabled:opacity-50 opacity-0 group-hover:opacity-100 transition-all"
             aria-label="More options"
           >
             <MoreVertical className="h-4 w-4" />
@@ -287,43 +293,43 @@ function ParticipantRow({
                 className="fixed inset-0 z-40" 
                 onClick={() => setShowMenu(false)} 
               />
-              <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-lg border border-border bg-[#1F2937] p-1 shadow-lg">
+              <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-xl border border-slate-200 bg-white p-1 shadow-lg overflow-hidden">
                 <button
                   onClick={handleMuteParticipant}
                   disabled={isActionPending || isMicMuted}
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 text-left font-medium transition-colors"
                 >
                   <MicOff className="h-4 w-4" /> Mute Microphone
                 </button>
                 <button
                   onClick={handleTurnCameraOff}
                   disabled={isActionPending || isCamOff}
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 text-left font-medium transition-colors"
                 >
                   <VideoOff className="h-4 w-4" /> Turn Camera Off
                 </button>
-                <div className="my-1 h-px w-full bg-border" />
+                <div className="my-1 h-px w-full bg-slate-100" />
                 <button
                   onClick={() => handleRoleChange("host")}
                   disabled={isActionPending || participantIsHost}
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 text-left font-medium transition-colors"
                 >
                   <Crown className="h-4 w-4" /> Make Host
                 </button>
                 <button
                   onClick={() => handleRoleChange("co_host")}
                   disabled={isActionPending}
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-surface-container hover:text-text-primary disabled:opacity-50 text-left"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 text-left font-medium transition-colors"
                 >
                   <ShieldCheck className="h-4 w-4" /> Make Co-Host
                 </button>
-                <div className="my-1 h-px w-full bg-border" />
+                <div className="my-1 h-px w-full bg-slate-100" />
                 <button
                   onClick={handleKickParticipant}
                   disabled={isActionPending}
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-[#DC2626] hover:bg-[#DC2626]/10 text-left"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold text-[#DC2626] hover:bg-red-50 text-left transition-colors"
                 >
-                  <UserX className="h-4 w-4" /> Remove from Meeting
+                  <UserX className="h-4 w-4" /> Remove
                 </button>
               </div>
             </>
