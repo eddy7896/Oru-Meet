@@ -11,19 +11,19 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "oru-meet — Virtual Classroom",
+    default: "oru-meet — Premium Video Meetings",
     template: "%s | oru-meet",
   },
   description:
-    "A virtual classroom platform for educators and students. Create or join a meeting with a single click.",
-  keywords: ["virtual classroom", "online meeting", "education", "video call"],
+    "A premium video meeting platform for professionals and teams. Create or join a meeting with a single click.",
+  keywords: ["video conferencing", "online meeting", "team collaboration", "video call"],
   authors: [{ name: "oru-meet" }],
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
   ),
   openGraph: {
-    title: "oru-meet — Virtual Classroom",
-    description: "Create or join a virtual classroom instantly.",
+    title: "oru-meet — Premium Video Meetings",
+    description: "Create or join a professional video meeting instantly.",
     type: "website",
   },
 };

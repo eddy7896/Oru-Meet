@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Video, BookOpen } from "lucide-react";
 import CreateMeetingButton from "@/components/home/CreateMeetingButton";
 import JoinMeetingForm from "@/components/home/JoinMeetingForm";
+import Link from "next/link";
 
 export default async function HomePage() {
   const user = await currentUser();
@@ -21,6 +22,14 @@ export default async function HomePage() {
           </span>
         </div>
         <div className="flex items-center gap-4">
+          {user && (
+            <Link 
+              href="/dashboard" 
+              className="text-[14px] font-medium text-[#64748B] hover:text-[#0F172A] transition-colors mr-2"
+            >
+              Dashboard
+            </Link>
+          )}
           <UserButton
             appearance={{
               elements: {
@@ -45,7 +54,7 @@ export default async function HomePage() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#1A73E8]"></span>
               </span>
               <span className="text-[13px] font-semibold text-[#1A73E8]">
-                Secure Virtual Classroom
+                Premium Video Meetings
               </span>
             </div>
 
@@ -57,7 +66,7 @@ export default async function HomePage() {
               </span>
             </h1>
             <p className="mb-10 text-lg leading-relaxed text-[#64748B]">
-              Premium video meetings for educators and students. Start a new class or join an existing one in seconds.
+              Premium video meetings for professionals and teams. Start a new meeting or join an existing one in seconds.
             </p>
 
             {/* Actions Panel */}
@@ -131,7 +140,7 @@ export default async function HomePage() {
       {/* -- Footer ---------------------------------------------------- */}
       <footer className="border-t border-black/[0.04] bg-white px-8 py-6 text-center lg:py-5">
         <p className="text-[13px] font-medium text-[#94A3B8]">
-          oru-meet &mdash; Designed for modern education
+          oru-meet &mdash; Designed for modern teams and professionals
         </p>
       </footer>
     </div>
