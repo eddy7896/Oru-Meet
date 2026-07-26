@@ -93,8 +93,11 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div 
+        className="w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5 bg-[#FAFAFA] shrink-0">
           <div className="flex items-center gap-2">
             <Setting2 size={24} variant="Bold" color="#1A73E8" />

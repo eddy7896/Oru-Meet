@@ -117,12 +117,9 @@ export function useYjsStore({
       setStoreWithStatus({ status: 'synced', store })
     }
 
-    // Wait for initial sync from network
-    provider.on('synced', (event: { synced: boolean }) => {
-      if (event.synced) {
-        handleSync()
-      }
-    })
+    // We call handleSync immediately so the user can start drawing without
+    // waiting for a 'synced' event (which may never fire if they are alone in the room)
+    handleSync()
 
     return () => {
       unsubs.forEach((fn) => fn())
