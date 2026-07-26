@@ -2,11 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { Video, Loader2, AlertCircle } from "lucide-react";
 import { generateMeetingCode } from "@/lib/utils/meeting-code";
 
 export default function CreateMeetingButton() {
   const router = useRouter();
+  const { userId } = useAuth();
   const [isPending, startTransition] = useTransition();
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,6 +16,11 @@ export default function CreateMeetingButton() {
   const loading = isPending || isCreating;
 
   async function handleCreate() {
+    if (!userId) {
+      router.push("/sign-in");
+      return;
+    }
+
     setIsCreating(true);
     setError(null);
 
