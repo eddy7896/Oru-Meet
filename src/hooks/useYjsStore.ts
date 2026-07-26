@@ -118,8 +118,8 @@ export function useYjsStore({
     }
 
     // Wait for initial sync from network
-    provider.on('synced', (isSynced: boolean) => {
-      if (isSynced) {
+    provider.on('synced', (event: { synced: boolean }) => {
+      if (event.synced) {
         handleSync()
       }
     })
