@@ -39,8 +39,7 @@ export function useYjsStore({
     setStoreWithStatus({ status: 'loading' })
 
     const yDoc = new Y.Doc({ gc: true })
-    const yArr = yDoc.getArray<{ key: string; val: TLRecord }>('tldraw-records')
-    const yState = yDoc.getMap<number>('tldraw-state')
+    const yMap = yDoc.getMap<TLRecord>('tldraw-records')
 
     // Initialize WebRTC provider
     const provider = new WebrtcProvider(roomId, yDoc, {
@@ -56,22 +55,13 @@ export function useYjsStore({
           function syncStoreChangesToYjs({ changes }) {
             yDoc.transact(() => {
               Object.values(changes.added).forEach((record) => {
-                yArr.push([{ key: record.id, val: record }])
+                yMap.set(record.id, record)
               })
               Object.values(changes.updated).forEach(([_, record]) => {
-                const idx = yArr.toArray().findIndex((r) => r.key === record.id)
-                if (idx !== -1) {
-                  yArr.delete(idx, 1)
-                  yArr.insert(idx, [{ key: record.id, val: record }])
-                } else {
-                  yArr.push([{ key: record.id, val: record }])
-                }
+                yMap.set(record.id, record)
               })
               Object.values(changes.removed).forEach((record) => {
-                const idx = yArr.toArray().findIndex((r) => r.key === record.id)
-                if (idx !== -1) {
-                  yArr.delete(idx, 1)
-                }
+                yMap.delete(record.id)
               })
             })
           },
@@ -80,26 +70,25 @@ export function useYjsStore({
       )
 
       // 2. Connect yjs to store
-      yArr.observeDeep((events) => {
+      yMap.observe((event) => {
         try {
           const toAdd: TLRecord[] = []
           const toUpdate: TLRecord[] = []
           const toRemove: TLRecord['id'][] = []
 
-          events.forEach((event) => {
-            event.changes.delta.forEach((delta) => {
-              if (delta.insert && Array.isArray(delta.insert)) {
-                delta.insert.forEach((item: any) => {
-                  if (store.has(item.key)) {
-                    toUpdate.push(item.val)
-                  } else {
-                    toAdd.push(item.val)
-                  }
-                })
+          event.changes.keys.forEach((change, key) => {
+            if (change.action === 'add') {
+              const record = yMap.get(key)
+              if (record) {
+                if (store.has(record.id)) toUpdate.push(record)
+                else toAdd.push(record)
               }
-              // Deletions are harder to track purely by delta, so we do a full diff if needed
-              // But for simplicity, we rely on the insert updates
-            })
+            } else if (change.action === 'update') {
+              const record = yMap.get(key)
+              if (record) toUpdate.push(record)
+            } else if (change.action === 'delete') {
+              toRemove.push(key as TLRecord['id'])
+            }
           })
 
           if (toAdd.length || toUpdate.length || toRemove.length) {
