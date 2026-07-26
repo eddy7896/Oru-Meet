@@ -223,8 +223,8 @@ export default function RoomClient({
       </aside>
 
       {/* 2. Center Content (Main Stage) */}
-      <main className="flex-1 flex flex-col p-0 md:p-6 relative overflow-hidden bg-black md:bg-transparent min-h-0 min-w-0">
-        <div className="flex-1 bg-white md:rounded-[2rem] shadow-sm md:border border-[#E5E7EB] flex flex-col overflow-hidden relative p-4 pb-28 md:p-6 md:pb-6 min-h-0 min-w-0">
+      <main className="flex-1 h-full flex flex-col p-0 md:p-6 relative overflow-hidden bg-black md:bg-transparent min-h-0 min-w-0">
+        <div className="flex-1 h-full bg-white md:rounded-[2rem] shadow-sm md:border border-[#E5E7EB] flex flex-col overflow-hidden relative p-4 pb-28 md:p-6 md:pb-6 min-h-0 min-w-0">
           
           {/* Header */}
           <div className="flex justify-between items-start md:items-center mb-4 px-2 flex-col md:flex-row gap-4 shrink-0">
