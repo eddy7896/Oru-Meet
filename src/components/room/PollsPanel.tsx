@@ -206,15 +206,13 @@ export default function PollsPanel({
           </div>
         ) : (
           <div className="space-y-6">
-            {isHost && (
-              <button
-                onClick={() => setIsCreating(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-white border border-slate-200 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
-              >
-                <Chart size={18} variant="Bold" color="#64748B" />
-                Create a Poll
-              </button>
-            )}
+            <button
+              onClick={() => setIsCreating(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-white border border-slate-200 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+            >
+              <Chart size={18} variant="Bold" color="#64748B" />
+              Create a Poll
+            </button>
 
             {polls.length === 0 ? (
               <div className="text-center mt-12">
