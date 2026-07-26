@@ -140,9 +140,8 @@ export default function RoomClient({
       token={token}
       serverUrl={serverUrl}
       connect={true}
-      audio={initialMicEnabled}
       video={initialCamEnabled}
-      className="flex min-h-dvh w-full bg-[#FAFAFA] overflow-hidden"
+      className="flex h-dvh w-full bg-[#FAFAFA] overflow-hidden"
       onDisconnected={() => router.push("/")}
       onError={(error) => console.error("[LiveKitRoom] Error:", error)}
     >
@@ -247,7 +246,7 @@ export default function RoomClient({
           </div>
 
           {/* Video Grid */}
-          <div className="flex-1 relative overflow-hidden rounded-[1.5rem]">
+          <div className="flex-1 relative overflow-hidden rounded-[1.5rem] min-h-0 min-w-0">
             <VideoGrid />
           </div>
 
