@@ -141,7 +141,7 @@ export default function RoomClient({
       serverUrl={serverUrl}
       connect={true}
       video={initialCamEnabled}
-      className="fixed inset-0 flex h-full w-full bg-[#FAFAFA] overflow-hidden"
+      className="bg-[#FAFAFA]"
       onDisconnected={() => router.push("/")}
       onError={(error) => console.error("[LiveKitRoom] Error:", error)}
     >

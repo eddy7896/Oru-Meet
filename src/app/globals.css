@@ -158,3 +158,14 @@ body {
   font-size: 13px !important;
   font-weight: 500 !important;
 }
+
+/* Override LiveKit's default .lk-room-container which sets position:relative and height:100% */
+/* Without this, our fixed/absolute positioning on the LiveKitRoom wrapper gets overridden */
+.lk-room-container {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100dvw !important;
+  height: 100dvh !important;
+  display: flex !important;
+  overflow: hidden !important;
+}
