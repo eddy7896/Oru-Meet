@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { CloseCircle } from "iconsax-react";
 import { Tldraw } from "tldraw";
 import "tldraw/tldraw.css";
 
@@ -8,26 +8,25 @@ interface WhiteboardPanelProps {
   onClose: () => void;
 }
 
-/**
- * WhiteboardPanel - Renders a tldraw instance.
- * For this sprint, it is a personal whiteboard. Real-time syncing (Yjs) can be 
- * added later if required by attaching a custom store.
- */
 export default function WhiteboardPanel({ onClose }: WhiteboardPanelProps) {
   return (
     <aside
-      className="flex w-full md:w-[400px] shrink-0 flex-col border-l border-border bg-[#111827]"
+      className="flex h-full w-full flex-col bg-[#FAFAFA]"
       aria-label="Whiteboard panel"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h2 className="text-sm font-semibold text-text-primary">Whiteboard</h2>
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[#E5E7EB]">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">Whiteboard</h2>
+          <p className="text-xs text-slate-500 mt-1">
+            Draw and share ideas visually.
+          </p>
+        </div>
         <button
           onClick={onClose}
-          aria-label="Close whiteboard"
-          className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary transition-colors"
+          className="text-slate-400 hover:text-slate-600 ml-4 shrink-0 transition-colors"
         >
-          <X className="h-4 w-4" />
+          <CloseCircle size={24} variant="Linear" />
         </button>
       </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Camera, Mic, Settings } from "lucide-react";
+import { CloseCircle, Video, Microphone2, Setting2 } from "iconsax-react";
 import { useRoomContext, useLocalParticipant } from "@livekit/components-react";
 import { BackgroundBlur } from "@livekit/track-processors";
 
@@ -93,32 +93,32 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[#374151] bg-[#1F2937] shadow-xl">
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5 bg-[#FAFAFA]">
           <div className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-text-primary" />
-            <h2 className="text-base font-semibold text-text-primary">Settings</h2>
+            <Setting2 size={24} variant="Bold" color="#1A73E8" />
+            <h2 className="text-lg font-bold text-slate-900">Settings</h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-text-secondary transition-colors hover:bg-surface-container hover:text-text-primary"
+            className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
           >
-            <X className="h-5 w-5" />
+            <CloseCircle size={24} variant="Linear" />
           </button>
         </div>
 
         <div className="space-y-6 p-6">
           {/* Camera Selection */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-text-secondary">
-              <Camera className="h-4 w-4" />
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700">
+              <Video size={18} variant="Bold" color="#64748B" />
               Camera
             </label>
             <select
               value={activeVideo}
               onChange={(e) => handleVideoChange(e.target.value)}
-              className="w-full rounded-xl border border-[#374151] bg-[#111827] px-4 py-2.5 text-sm text-text-primary outline-none focus:border-[#1A73E8]"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8]"
             >
               {videoDevices.map((d) => (
                 <option key={d.deviceId} value={d.deviceId}>
@@ -130,14 +130,14 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
 
           {/* Microphone Selection */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-text-secondary">
-              <Mic className="h-4 w-4" />
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700">
+              <Microphone2 size={18} variant="Bold" color="#64748B" />
               Microphone
             </label>
             <select
               value={activeAudio}
               onChange={(e) => handleAudioChange(e.target.value)}
-              className="w-full rounded-xl border border-[#374151] bg-[#111827] px-4 py-2.5 text-sm text-text-primary outline-none focus:border-[#1A73E8]"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8]"
             >
               {audioDevices.map((d) => (
                 <option key={d.deviceId} value={d.deviceId}>
@@ -147,28 +147,28 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             </select>
           </div>
 
-          <div className="my-4 h-px w-full bg-surface-container" />
+          <div className="my-2 h-px w-full bg-slate-100" />
 
           {/* Video Effects */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-text-secondary">Video Effects</h3>
-            <label className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface-container p-4 hover:bg-surface-container">
+            <h3 className="text-sm font-bold text-slate-700">Video Effects</h3>
+            <label className="flex cursor-pointer items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4 hover:bg-slate-100 transition-colors">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium text-text-primary">Background Blur</p>
-                <p className="text-xs text-text-secondary">Blur your surroundings</p>
+                <p className="text-sm font-bold text-slate-900">Background Blur</p>
+                <p className="text-xs font-medium text-slate-500">Blur your surroundings</p>
               </div>
               <div
                 onClick={(e) => {
                   e.preventDefault();
                   toggleBlur();
                 }}
-                className={`relative h-6 w-11 rounded-full transition-colors ${
-                  isBlurActive ? "bg-[#1A73E8]" : "bg-surface-container"
+                className={`relative h-7 w-12 rounded-full transition-colors ${
+                  isBlurActive ? "bg-[#1A73E8]" : "bg-slate-300"
                 }`}
               >
                 <div
-                  className={`absolute top-[2px] h-5 w-5 rounded-full bg-white transition-transform ${
-                    isBlurActive ? "left-[2px] translate-x-5" : "left-[2px] translate-x-0"
+                  className={`absolute top-[3px] h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                    isBlurActive ? "left-[3px] translate-x-[20px]" : "left-[3px] translate-x-0"
                   }`}
                 />
               </div>
