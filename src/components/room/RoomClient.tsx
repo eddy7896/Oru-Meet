@@ -267,7 +267,7 @@ export default function RoomClient({
 
       {/* 3. Right Sidebar (Chat & Panels) */}
       {activePanel && (
-        <aside className="w-full md:w-80 lg:w-96 shrink-0 bg-[#FAFAFA] border-l border-[#E5E7EB] flex flex-col z-20 absolute md:static inset-0">
+        <aside className="w-full md:w-80 lg:w-96 shrink-0 bg-[#FAFAFA] border-l border-[#E5E7EB] flex flex-col z-30 absolute lg:static inset-0 md:inset-auto md:right-0 md:top-0 md:bottom-0 shadow-2xl lg:shadow-none">
           {activePanel === "chat" && (
             <ChatPanel roomId={room.id} onClose={() => setActivePanel(null)} />
           )}
