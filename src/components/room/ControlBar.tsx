@@ -11,25 +11,20 @@ import { Track } from "livekit-client";
 import { IconButton } from "@/components/ui/IconButton";
 import { Button } from "@/components/ui/Button";
 import {
-  Mic,
-  MicOff,
+  Microphone2,
+  MicrophoneSlash,
   Video,
-  VideoOff,
-  MonitorUp,
-  MonitorStop,
-  MessageSquare,
-  Users,
-  PhoneOff,
-  X,
+  VideoSlash,
+  Monitor,
+  MessageText,
+  Profile2User,
+  CloseCircle,
   Lock,
   Unlock,
-  Hand,
-  BarChart2,
-  Pencil,
-  LayoutGrid,
-  Settings,
-  UserPlus,
-} from "lucide-react";
+  Setting2,
+  UserAdd,
+  Subtitle
+} from "iconsax-react";
 import { cn } from "@/lib/utils/cn";
 import SettingsModal from "./SettingsModal";
 import InviteModal from "./InviteModal";
@@ -43,11 +38,6 @@ interface ControlBarProps {
   onTogglePanel: (panel: "chat" | "participants" | "polls" | "whiteboard" | "breakouts") => void;
 }
 
-/**
- * ControlBar — Google Meet-style toolbar centered at the bottom of the room.
- * Uses LiveKit's useTrackToggle for mic, camera, and screen share.
- * Host sees an "End Meeting" option; participants see "Leave Meeting" only.
- */
 export default function ControlBar({
   roomId,
   roomCode,
@@ -61,20 +51,8 @@ export default function ControlBar({
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
   const [isLocking, setIsLocking] = useState(false);
-  const [isHandRaised, setIsHandRaised] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
-
-  // Data channel for hand raising
-  const { send } = useDataChannel("hand_raise");
-
-  function toggleHandRaise() {
-    const newState = !isHandRaised;
-    setIsHandRaised(newState);
-    const payload = JSON.stringify({ type: "HAND_RAISE", isRaised: newState });
-    const encoder = new TextEncoder();
-    send(encoder.encode(payload), { reliable: true });
-  }
 
   // ── Lock room (host) ─────────────────────────────────────────────
   async function toggleLock() {
@@ -92,7 +70,7 @@ export default function ControlBar({
     }
   }
 
-  // Track toggles — useTrackToggle returns { toggle, enabled, pending }
+  // Track toggles
   const { toggle: toggleMic, enabled: micEnabled } = useTrackToggle({
     source: Track.Source.Microphone,
   });
@@ -133,34 +111,33 @@ export default function ControlBar({
       {/* End Meeting Confirmation Dialog */}
       {showEndConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl border border-[#374151] bg-[#1F2937] p-6 shadow-xl">
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-white p-6 shadow-xl">
             <div className="mb-4 flex items-start justify-between">
-              <h2 className="text-base font-semibold text-text-primary">
+              <h2 className="text-base font-bold text-slate-900">
                 End meeting for everyone?
               </h2>
               <button
                 onClick={() => setShowEndConfirm(false)}
-                aria-label="Cancel"
-                className="rounded-lg p-1 text-text-secondary hover:bg-surface-container hover:text-text-primary"
+                className="rounded-lg p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               >
-                <X className="h-4 w-4" />
+                <CloseCircle size={20} variant="Linear" />
               </button>
             </div>
-            <p className="mb-6 text-sm text-text-secondary">
+            <p className="mb-6 text-sm text-slate-600">
               This will disconnect all participants and mark the meeting as
               ended. This cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowEndConfirm(false)}
-                className="flex-1 rounded-xl border border-[#374151] py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-container"
+                className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleEndMeeting}
                 disabled={isEnding}
-                className="flex-1 rounded-xl bg-[#DC2626] py-2.5 text-sm font-semibold text-text-primary hover:bg-[#B91C1C] disabled:opacity-60"
+                className="flex-1 rounded-xl bg-red-500 py-2.5 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-60"
               >
                 {isEnding ? "Ending…" : "End for everyone"}
               </button>
@@ -169,175 +146,71 @@ export default function ControlBar({
         </div>
       )}
 
-      {/* Control Bar */}
+      {/* Floating Control Bar */}
       <footer
-        className="flex items-center justify-center gap-2 border-t border-border px-6 py-3 bg-surface"
+        className="flex items-center justify-center gap-3 bg-white/90 backdrop-blur-lg border border-slate-200 px-6 py-4 rounded-full shadow-lg"
         role="toolbar"
         aria-label="Meeting controls"
       >
-        {/* Mic toggle */}
-        <IconButton
-          onClick={() => toggleMic()}
-          active={micEnabled}
-          activeLabel="Mute microphone"
-          inactiveLabel="Unmute microphone"
-          activeIcon={<Mic className="h-5 w-5" />}
-          inactiveIcon={<MicOff className="h-5 w-5" />}
-          danger={!micEnabled}
-        />
-
         {/* Camera toggle */}
-        <IconButton
+        <button
           onClick={() => toggleCam()}
-          active={camEnabled}
-          activeLabel="Turn off camera"
-          inactiveLabel="Turn on camera"
-          activeIcon={<Video className="h-5 w-5" />}
-          inactiveIcon={<VideoOff className="h-5 w-5" />}
-          danger={!camEnabled}
-        />
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
+            camEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-red-500 text-white hover:bg-red-600"
+          )}
+        >
+          {camEnabled ? <Video size={24} variant="Linear" /> : <VideoSlash size={24} variant="Linear" />}
+        </button>
 
-        {/* Screen share */}
-        <IconButton
-          onClick={() => toggleScreen()}
-          active={screenEnabled}
-          activeLabel="Stop screen sharing"
-          inactiveLabel="Share screen"
-          activeIcon={<MonitorStop className="h-5 w-5" />}
-          inactiveIcon={<MonitorUp className="h-5 w-5" />}
-          highlight={screenEnabled}
-        />
-
-        {/* Hand Raise */}
-        <IconButton
-          onClick={toggleHandRaise}
-          active={isHandRaised}
-          activeLabel="Lower hand"
-          inactiveLabel="Raise hand"
-          activeIcon={<Hand className="h-5 w-5 fill-yellow-400 text-yellow-400" />}
-          inactiveIcon={<Hand className="h-5 w-5" />}
-          highlight={isHandRaised}
-        />
-
-        {/* Settings */}
-        <IconButton
-          onClick={() => setShowSettings(true)}
-          active={false}
-          activeLabel="Settings"
-          inactiveLabel="Settings"
-          activeIcon={<Settings className="h-5 w-5" />}
-          inactiveIcon={<Settings className="h-5 w-5" />}
-        />
-
-        {/* Invite */}
-        <IconButton
-          onClick={() => setShowInvite(true)}
-          active={false}
-          activeLabel="Invite people"
-          inactiveLabel="Invite people"
-          activeIcon={<UserPlus className="h-5 w-5" />}
-          inactiveIcon={<UserPlus className="h-5 w-5" />}
-        />
-
-        {/* Divider */}
-        <div className="mx-1 h-8 w-px bg-border" />
-
-        {/* Chat panel toggle */}
-        <IconButton
-          onClick={() => onTogglePanel("chat")}
-          active={activePanel === "chat"}
-          activeLabel="Close chat"
-          inactiveLabel="Open chat"
-          activeIcon={<MessageSquare className="h-5 w-5" />}
-          inactiveIcon={<MessageSquare className="h-5 w-5" />}
-          highlight={activePanel === "chat"}
-        />
-
-        {/* Participants panel toggle */}
-        <IconButton
-          onClick={() => onTogglePanel("participants")}
-          active={activePanel === "participants"}
-          activeLabel="Close participants list"
-          inactiveLabel="Show participants"
-          activeIcon={<Users className="h-5 w-5" />}
-          inactiveIcon={<Users className="h-5 w-5" />}
-          highlight={activePanel === "participants"}
-        />
-
-        {/* Polls panel toggle */}
-        <IconButton
-          onClick={() => onTogglePanel("polls")}
-          active={activePanel === "polls"}
-          activeLabel="Close polls"
-          inactiveLabel="Open polls"
-          activeIcon={<BarChart2 className="h-5 w-5" />}
-          inactiveIcon={<BarChart2 className="h-5 w-5" />}
-          highlight={activePanel === "polls"}
-        />
-
-        {/* Whiteboard panel toggle */}
-        <IconButton
-          onClick={() => onTogglePanel("whiteboard")}
-          active={activePanel === "whiteboard"}
-          activeLabel="Close whiteboard"
-          inactiveLabel="Open whiteboard"
-          activeIcon={<Pencil className="h-5 w-5" />}
-          inactiveIcon={<Pencil className="h-5 w-5" />}
-          highlight={activePanel === "whiteboard"}
-        />
-
-        {/* Breakouts panel toggle (Host Only) */}
-        {role === "host" && (
-          <IconButton
-            onClick={() => onTogglePanel("breakouts")}
-            active={activePanel === "breakouts"}
-            activeLabel="Close breakout rooms"
-            inactiveLabel="Manage breakout rooms"
-            activeIcon={<LayoutGrid className="h-5 w-5" />}
-            inactiveIcon={<LayoutGrid className="h-5 w-5" />}
-            highlight={activePanel === "breakouts"}
-          />
-        )}
-
-        {/* Divider */}
-        <div className="mx-1 h-8 w-px bg-border" />
-
-        {/* Host controls (Lock) */}
-        {role === "host" && (
-          <IconButton
-            onClick={toggleLock}
-            active={isLocked}
-            activeLabel="Unlock room"
-            inactiveLabel="Lock room"
-            activeIcon={<Lock className="h-5 w-5 text-yellow-500" />}
-            inactiveIcon={<Unlock className="h-5 w-5" />}
-          />
-        )}
+        {/* Mic toggle */}
+        <button
+          onClick={() => toggleMic()}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
+            micEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-red-500 text-white hover:bg-red-600"
+          )}
+        >
+          {micEnabled ? <Microphone2 size={24} variant="Linear" /> : <MicrophoneSlash size={24} variant="Linear" />}
+        </button>
 
         {/* Leave / End meeting */}
-        <div className="flex shrink-0">
-          {role === "host" ? (
-            <Button
-              id="end-meeting-btn"
-              variant="danger"
-              onClick={() => setShowEndConfirm(true)}
-              aria-label="End meeting for everyone"
-              icon={<PhoneOff className="h-4 w-4" />}
-            >
-              End
-            </Button>
-          ) : (
-            <Button
-              id="leave-meeting-btn"
-              variant="danger"
-              onClick={handleLeave}
-              aria-label="Leave meeting"
-              icon={<PhoneOff className="h-4 w-4" />}
-            >
-              Leave
-            </Button>
+        <button
+          id="leave-meeting-btn"
+          onClick={role === "host" ? () => setShowEndConfirm(true) : handleLeave}
+          className="flex h-12 items-center justify-center rounded-full bg-red-500 px-6 text-white font-bold transition-all hover:bg-red-600 shadow-sm mx-2"
+        >
+          {role === "host" ? "End Meeting" : "Leave Meeting"}
+        </button>
+
+        {/* Screen share */}
+        <button
+          onClick={() => toggleScreen()}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
+            screenEnabled ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
           )}
-        </div>
+        >
+          <Monitor size={24} variant="Linear" />
+        </button>
+
+        {/* Closed Captions Placeholder */}
+        <button
+          className="flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+        >
+          <Subtitle size={24} variant="Linear" />
+        </button>
+
+        {/* Divider */}
+        <div className="mx-1 h-8 w-px bg-slate-200" />
+
+        {/* Settings */}
+        <button
+          onClick={() => setShowSettings(true)}
+          className="flex h-12 w-12 items-center justify-center rounded-full transition-all bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
+        >
+          <Setting2 size={24} variant="Linear" />
+        </button>
       </footer>
     </>
   );

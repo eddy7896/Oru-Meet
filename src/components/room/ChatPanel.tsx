@@ -3,20 +3,14 @@
 import { useRef, useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import { useUser } from "@clerk/nextjs";
-import { Send, X } from "lucide-react";
+import { Send2, EmojiNormal, CloseCircle } from "iconsax-react";
 import { cn } from "@/lib/utils/cn";
-import { Panel } from "@/components/ui/Panel";
 
 interface ChatPanelProps {
   roomId: string;
   onClose: () => void;
 }
 
-/**
- * ChatPanel — real-time in-call chat using LiveKit's data channel.
- * Messages are sent/received via LiveKit's useChat hook (no Supabase round-trip
- * needed for in-room chat during the session).
- */
 export default function ChatPanel({ roomId, onClose }: ChatPanelProps) {
   const { user } = useUser();
   const { messages, sendMessage, isSending, isLoading } = useChat(roomId);
@@ -28,7 +22,6 @@ export default function ChatPanel({ roomId, onClose }: ChatPanelProps) {
     if (!text || isSending) return;
     setInput("");
     await sendMessage(text);
-    // Scroll to bottom after sending
     setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
@@ -42,78 +35,101 @@ export default function ChatPanel({ roomId, onClose }: ChatPanelProps) {
   }
 
   return (
-    <Panel title="In-call messages" onClose={onClose}>
-      <div className="flex h-full flex-col">
-        {/* Message list */}
-        <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3">
-          {isLoading ? (
-            <p className="mt-8 text-center text-xs text-text-secondary">Loading messages...</p>
-          ) : messages.length === 0 ? (
-            <p className="mt-8 text-center text-xs text-text-secondary">
-              No messages yet. Say something!
-            </p>
-          ) : (
-            messages.map((msg) => {
-              const isLocal = msg.sender_id === user?.id;
-              const senderName = msg.profiles?.full_name || "Someone";
-              const timeStr = new Date(msg.created_at).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
-
-              return (
-                <div
-                  key={msg.id}
-                  className={cn("flex flex-col gap-0.5", isLocal && "items-end")}
-                >
-                  <span className="text-[10px] text-text-secondary">
-                    {isLocal ? "You" : senderName} · {timeStr}
-                  </span>
-                  <div
-                    className={cn(
-                      "max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed",
-                      isLocal
-                        ? "rounded-tr-sm bg-[#1A73E8] text-text-primary"
-                        : "rounded-tl-sm bg-surface-container text-text-secondary"
-                    )}
-                  >
-                    {msg.content}
-                  </div>
-                </div>
-              );
-            })
-          )}
-          <div ref={bottomRef} />
-        </div>
-
-        {/* Input area */}
-        <div className="border-t border-border p-3">
-          <div className="flex items-end gap-2 rounded-xl border border-border bg-surface-container px-3 py-2">
-            <textarea
-              id="chat-input"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Send a message…"
-              rows={1}
-              aria-label="Type a chat message"
-              className="flex-1 resize-none bg-transparent text-sm text-text-primary placeholder-white/30 outline-none"
-              style={{ maxHeight: "80px", overflowY: "auto" }}
-            />
-            <button
-              onClick={handleSend}
-              disabled={!input.trim() || isSending}
-              aria-label="Send message"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1A73E8] text-text-primary transition-all hover:bg-[#1557B0] disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Send className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <p className="mt-1.5 text-[10px] text-text-secondary">
-            Press Enter to send · Shift+Enter for new line
+    <div className="flex h-full flex-col bg-[#FAFAFA]">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[#E5E7EB]">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">Messages</h2>
+          <p className="text-xs text-slate-500 mt-1">
+            You can chat here with other members during the meeting and they will be deleted after the meeting.
           </p>
         </div>
+        <button onClick={onClose} className="text-slate-400 hover:text-slate-600 ml-4 shrink-0">
+          <CloseCircle size={24} variant="Linear" />
+        </button>
       </div>
-    </Panel>
+
+      {/* Message list */}
+      <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-6">
+        {isLoading ? (
+          <p className="mt-8 text-center text-sm text-slate-500">Loading messages...</p>
+        ) : messages.length === 0 ? (
+          <p className="mt-8 text-center text-sm text-slate-500">
+            No messages yet. Say something!
+          </p>
+        ) : (
+          messages.map((msg) => {
+            const isLocal = msg.sender_id === user?.id;
+            const senderName = msg.profiles?.full_name || "Someone";
+            const timeStr = new Date(msg.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            // Fake an avatar based on name initial if not present
+            const initial = senderName.charAt(0).toUpperCase();
+            
+            return (
+              <div
+                key={msg.id}
+                className={cn("flex gap-3", isLocal ? "flex-row-reverse" : "flex-row")}
+              >
+                {/* Avatar */}
+                <div className="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center text-xs font-bold text-slate-600 overflow-hidden shadow-sm">
+                  {initial}
+                </div>
+                
+                {/* Message Body */}
+                <div className={cn("flex flex-col gap-1 max-w-[75%]", isLocal ? "items-end" : "items-start")}>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-bold text-slate-900">{isLocal ? "You" : senderName}</span>
+                    <span className="text-xs text-slate-400">{timeStr}</span>
+                  </div>
+                  {isLocal ? (
+                    <div className="rounded-2xl rounded-tr-sm bg-[#1A73E8] px-4 py-2.5 text-[13px] text-white shadow-sm leading-relaxed">
+                      {msg.content}
+                    </div>
+                  ) : (
+                    <div className="text-[13px] text-slate-700 leading-relaxed pt-1">
+                      {msg.content}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input area */}
+      <div className="p-4 border-t border-[#E5E7EB] bg-white">
+        <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-[#FAFAFA] px-2 py-1.5 shadow-sm focus-within:border-[#1A73E8] focus-within:ring-1 focus-within:ring-[#1A73E8] transition-all">
+          <button className="p-2 text-yellow-500 hover:scale-110 transition-transform">
+            <EmojiNormal size={20} variant="Bold" />
+          </button>
+          
+          <textarea
+            id="chat-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Send a message…"
+            rows={1}
+            aria-label="Type a chat message"
+            className="flex-1 resize-none bg-transparent text-[13px] text-slate-900 placeholder:text-slate-400 outline-none self-center pt-2"
+            style={{ maxHeight: "80px", overflowY: "auto" }}
+          />
+          
+          <button
+            onClick={handleSend}
+            disabled={!input.trim() || isSending}
+            aria-label="Send message"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1A73E8] text-white transition-all hover:bg-[#1557B0] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <Send2 size={16} variant="Bold" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
