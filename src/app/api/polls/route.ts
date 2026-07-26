@@ -42,12 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
 
-    if (room.host_id !== userId) {
-      return NextResponse.json(
-        { error: "Forbidden: Only the host can create polls" },
-        { status: 403 }
-      );
-    }
+
 
     const { data: poll, error } = await supabase
       .from("polls")
