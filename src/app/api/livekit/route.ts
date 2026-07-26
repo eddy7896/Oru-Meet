@@ -49,16 +49,29 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // roomName is the 'code' (e.g. abc-defg-hij), we need the UUID for participants table
+    const { data: roomRecord, error: roomError } = await supabase
+      .from("rooms")
+      .select("id")
+      .eq("code", roomName)
+      .single();
+
+    if (roomError || !roomRecord) {
+      throw new Error("Room not found in database");
+    }
+
+    const roomUuid = roomRecord.id;
+
     const { data: existing } = await supabase
       .from("participants")
       .select("id")
-      .eq("room_id", roomName)
+      .eq("room_id", roomUuid)
       .eq("user_id", userId)
       .single();
 
     if (!existing) {
       await supabase.from("participants").insert({
-        room_id: roomName,
+        room_id: roomUuid,
         user_id: userId,
         role,
         is_admitted: true,
