@@ -25,7 +25,7 @@ interface RoomClientProps {
 
 type PanelType = "chat" | "participants" | "polls" | "whiteboard" | "breakouts" | null;
 
-import { Home2, Video, Microphone2, MessageText, Profile2User } from "iconsax-react";
+import { MessageText, Profile2User, Chart, Edit, Category } from "iconsax-react";
 
 export default function RoomClient({
   roomId,
@@ -156,26 +156,58 @@ export default function RoomClient({
 
         {/* Nav Items */}
         <div className="flex flex-col gap-8 flex-1 w-full items-center">
+          {/* Participants */}
           <button 
-            onClick={() => router.push('/')}
-            className="text-[#9CA3AF] hover:text-[#1A73E8] transition-colors"
+            className={cn("relative w-full flex justify-center transition-colors", activePanel === "participants" ? "text-[#1A73E8]" : "text-[#9CA3AF] hover:text-[#1A73E8]")}
+            onClick={() => setActivePanel(activePanel === "participants" ? null : "participants")}
+            title="Participants"
           >
-            <Home2 size={24} variant="Bold" color="#9CA3AF" />
+            <Profile2User size={24} variant="Bold" color="currentColor" />
+            {activePanel === "participants" && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#1A73E8] rounded-l-md" />}
           </button>
-          <button className="text-[#1A73E8] relative w-full flex justify-center">
-            <Video size={24} variant="Bold" color="#1A73E8" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#1A73E8] rounded-l-md" />
-          </button>
-          <button className="text-[#9CA3AF] hover:text-[#1A73E8] transition-colors">
-            <Microphone2 size={24} variant="Bold" color="#9CA3AF" />
-          </button>
+
+          {/* Chat */}
           <button 
-            className="text-[#9CA3AF] hover:text-[#1A73E8] transition-colors relative"
+            className={cn("relative w-full flex justify-center transition-colors", activePanel === "chat" ? "text-[#1A73E8]" : "text-[#9CA3AF] hover:text-[#1A73E8]")}
             onClick={() => setActivePanel(activePanel === "chat" ? null : "chat")}
+            title="Chat"
           >
-            <MessageText size={24} variant="Bold" color="#9CA3AF" />
-            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#DC2626] rounded-full border-2 border-[#FAFAFA]" />
+            <MessageText size={24} variant="Bold" color="currentColor" />
+            {activePanel === "chat" && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#1A73E8] rounded-l-md" />}
+            {activePanel !== "chat" && <div className="absolute ml-3 -top-1 w-2.5 h-2.5 bg-[#DC2626] rounded-full border-2 border-[#FAFAFA]" />}
           </button>
+
+          {/* Polls */}
+          <button 
+            className={cn("relative w-full flex justify-center transition-colors", activePanel === "polls" ? "text-[#1A73E8]" : "text-[#9CA3AF] hover:text-[#1A73E8]")}
+            onClick={() => setActivePanel(activePanel === "polls" ? null : "polls")}
+            title="Polls"
+          >
+            <Chart size={24} variant="Bold" color="currentColor" />
+            {activePanel === "polls" && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#1A73E8] rounded-l-md" />}
+          </button>
+
+          {/* Whiteboard */}
+          <button 
+            className={cn("relative w-full flex justify-center transition-colors", activePanel === "whiteboard" ? "text-[#1A73E8]" : "text-[#9CA3AF] hover:text-[#1A73E8]")}
+            onClick={() => setActivePanel(activePanel === "whiteboard" ? null : "whiteboard")}
+            title="Whiteboard"
+          >
+            <Edit size={24} variant="Bold" color="currentColor" />
+            {activePanel === "whiteboard" && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#1A73E8] rounded-l-md" />}
+          </button>
+
+          {/* Breakouts (Host only) */}
+          {role === "host" && (
+            <button 
+              className={cn("relative w-full flex justify-center transition-colors", activePanel === "breakouts" ? "text-[#1A73E8]" : "text-[#9CA3AF] hover:text-[#1A73E8]")}
+              onClick={() => setActivePanel(activePanel === "breakouts" ? null : "breakouts")}
+              title="Breakout Rooms"
+            >
+              <Category size={24} variant="Bold" color="currentColor" />
+              {activePanel === "breakouts" && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#1A73E8] rounded-l-md" />}
+            </button>
+          )}
         </div>
 
         {/* User Avatar */}
