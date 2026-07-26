@@ -1,7 +1,8 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateLiveKitToken } from "@/lib/livekit/token";
+import { createAdminClient } from "@/lib/supabase/server";
 
 const bodySchema = z.object({
   roomName: z.string().min(1).max(100),
@@ -34,7 +35,47 @@ export async function POST(request: NextRequest) {
 
   const { roomName, participantName, role } = parsed.data;
 
-  // 3. Generate token
+  // 3. Upsert user into profiles and participants to ensure DB presence
+  try {
+    const supabase = await createAdminClient();
+    const user = await currentUser();
+
+    if (user) {
+      await supabase.from("profiles").upsert({
+        id: userId,
+        full_name: participantName,
+        email: user.primaryEmailAddress?.emailAddress,
+        avatar_url: user.imageUrl,
+      });
+    }
+
+    const { data: existing } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("room_id", roomName)
+      .eq("user_id", userId)
+      .single();
+
+    if (!existing) {
+      await supabase.from("participants").insert({
+        room_id: roomName,
+        user_id: userId,
+        role,
+        is_admitted: true,
+      });
+    } else {
+      // Ensure they are admitted
+      await supabase
+        .from("participants")
+        .update({ is_admitted: true })
+        .eq("id", existing.id);
+    }
+  } catch (dbError) {
+    console.error("[LiveKit Token] Failed to sync participant to DB:", dbError);
+    // Proceed to give token anyway, but some DB features might fail.
+  }
+
+  // 4. Generate token
   try {
     const token = await generateLiveKitToken({
       roomName,
