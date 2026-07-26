@@ -173,8 +173,13 @@ function ParticipantRow({
   const isCamOff = !participant.isCameraEnabled;
   const displayName = participant.name ?? participant.identity;
   
-  // The host is typically the one with roomAdmin permission
-  const participantIsHost = participant.permissions?.roomAdmin === true;
+  let participantIsHost = false;
+  try {
+    const meta = participant.metadata ? JSON.parse(participant.metadata) : {};
+    participantIsHost = meta.role === "host";
+  } catch {
+    participantIsHost = false; // fallback if JSON parsing fails
+  }
     
   const [isActionPending, setIsActionPending] = useState(false);
   const [showMenu, setShowMenu] = useState(false);

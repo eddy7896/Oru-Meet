@@ -68,12 +68,11 @@ export async function PATCH(
 
     const roomService = new RoomServiceClient(liveKitUrl, apiKey, apiSecret);
     
-    // Update LiveKit permissions
-    await roomService.updateParticipant(roomId, identity, undefined, {
+    // Update LiveKit permissions and metadata
+    await roomService.updateParticipant(roomId, identity, JSON.stringify({ role }), {
       canPublish: true,
       canSubscribe: true,
       canPublishData: true,
-      roomAdmin: role === "host", // Make host means give admin grants
     });
 
     return NextResponse.json({ success: true });

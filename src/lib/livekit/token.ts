@@ -41,6 +41,7 @@ export async function generateLiveKitToken({
   const token = new AccessToken(apiKey, apiSecret, {
     identity: participantId,
     name: participantName,
+    metadata: JSON.stringify({ role }),
     // Token expires in 4 hours
     ttl: "4h",
   });
