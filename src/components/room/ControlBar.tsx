@@ -24,7 +24,8 @@ import {
   Unlock,
   Setting2,
   UserAdd,
-  Subtitle
+  Subtitle,
+  CallRemove
 } from "iconsax-react";
 import { cn } from "@/lib/utils/cn";
 import SettingsModal from "./SettingsModal";
@@ -157,43 +158,12 @@ export default function ControlBar({
         document.body
       )}
 
-      {/* Floating Control Bar */}
+      {/* Docked Control Bar on Mobile, Floating on Desktop */}
       <footer
-        className="flex items-center justify-center gap-3 bg-white/90 backdrop-blur-lg border border-slate-200 px-6 py-4 rounded-full shadow-lg"
+        className="fixed bottom-0 left-0 w-full md:absolute md:bottom-8 md:left-1/2 md:w-auto md:-translate-x-1/2 flex items-center justify-evenly md:justify-center gap-2 md:gap-3 bg-white/90 backdrop-blur-lg border-t md:border border-slate-200 px-4 md:px-6 py-3 md:py-4 md:rounded-full rounded-t-3xl shadow-[0_-4px_20px_rgb(0,0,0,0.05)] md:shadow-lg z-30 transition-all"
         role="toolbar"
         aria-label="Meeting controls"
       >
-        {/* Camera toggle */}
-        <button
-          onClick={() => toggleCam()}
-          className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
-            camEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-red-500 text-white hover:bg-red-600"
-          )}
-        >
-          {camEnabled ? <Video size={24} variant="Linear" color="#334155" /> : <VideoSlash size={24} variant="Linear" color="#ffffff" />}
-        </button>
-
-        {/* Mic toggle */}
-        <button
-          onClick={() => toggleMic()}
-          className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
-            micEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-red-500 text-white hover:bg-red-600"
-          )}
-        >
-          {micEnabled ? <Microphone2 size={24} variant="Linear" color="#334155" /> : <MicrophoneSlash size={24} variant="Linear" color="#ffffff" />}
-        </button>
-
-        {/* Leave / End meeting */}
-        <button
-          id="leave-meeting-btn"
-          onClick={role === "host" ? () => setShowEndConfirm(true) : handleLeave}
-          className="flex h-12 items-center justify-center rounded-full bg-red-500 px-6 text-white font-bold transition-all hover:bg-red-600 shadow-sm mx-2"
-        >
-          {role === "host" ? "End Meeting" : "Leave Meeting"}
-        </button>
-
         {/* Screen share */}
         <button
           onClick={() => toggleScreen()}
@@ -205,20 +175,63 @@ export default function ControlBar({
           <Monitor size={24} variant="Linear" color={screenEnabled ? "#ffffff" : "#334155"} />
         </button>
 
-        {/* Closed Captions Placeholder */}
+        {/* Camera toggle */}
         <button
-          className="flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+          onClick={() => toggleCam()}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
+            camEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-slate-200 text-slate-500"
+          )}
+        >
+          {camEnabled ? <Video size={24} variant="Linear" color="#334155" /> : <VideoSlash size={24} variant="Linear" color="#64748B" />}
+        </button>
+
+        {/* Leave / End meeting */}
+        <button
+          id="leave-meeting-btn"
+          onClick={role === "host" ? () => setShowEndConfirm(true) : handleLeave}
+          className="flex h-14 w-14 md:h-12 md:w-auto items-center justify-center rounded-[1.25rem] md:rounded-full bg-red-500 md:px-6 text-white font-bold transition-all hover:bg-red-600 shadow-sm mx-1 md:mx-2"
+        >
+          <span className="hidden md:block">{role === "host" ? "End Meeting" : "Leave Meeting"}</span>
+          <CallRemove size={26} variant="Bold" className="md:hidden" color="#ffffff" />
+        </button>
+
+        {/* Mic toggle */}
+        <button
+          onClick={() => toggleMic()}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
+            micEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-slate-200 text-slate-500"
+          )}
+        >
+          {micEnabled ? <Microphone2 size={24} variant="Linear" color="#334155" /> : <MicrophoneSlash size={24} variant="Linear" color="#64748B" />}
+        </button>
+
+        {/* Chat / Messages */}
+        <button
+          onClick={() => onTogglePanel("chat")}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm",
+            activePanel === "chat" ? "bg-blue-50 text-blue-600 border border-blue-200" : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+          )}
+        >
+          <MessageText size={24} variant="Linear" color={activePanel === "chat" ? "#2563EB" : "#334155"} />
+        </button>
+
+        {/* Closed Captions Placeholder (Desktop Only) */}
+        <button
+          className="hidden md:flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
         >
           <Subtitle size={24} variant="Linear" color="#334155" />
         </button>
 
-        {/* Divider */}
-        <div className="mx-1 h-8 w-px bg-slate-200" />
+        {/* Divider (Desktop Only) */}
+        <div className="hidden md:block mx-1 h-8 w-px bg-slate-200" />
 
-        {/* Settings */}
+        {/* Settings (Desktop Only) */}
         <button
           onClick={() => setShowSettings(true)}
-          className="flex h-12 w-12 items-center justify-center rounded-full transition-all bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
+          className="hidden md:flex h-12 w-12 items-center justify-center rounded-full transition-all bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
         >
           <Setting2 size={24} variant="Linear" color="#334155" />
         </button>

@@ -224,8 +224,8 @@ export default function RoomClient({
       </aside>
 
       {/* 2. Center Content (Main Stage) */}
-      <main className="flex-1 flex flex-col p-4 md:p-6 relative overflow-hidden">
-        <div className="flex-1 bg-white rounded-[2rem] shadow-sm border border-[#E5E7EB] flex flex-col overflow-hidden relative p-4 md:p-6">
+      <main className="flex-1 flex flex-col p-0 md:p-6 relative overflow-hidden bg-black md:bg-transparent">
+        <div className="flex-1 bg-white md:rounded-[2rem] shadow-sm md:border border-[#E5E7EB] flex flex-col overflow-hidden relative p-4 pb-28 md:p-6 md:pb-6">
           
           {/* Header */}
           <div className="flex justify-between items-start md:items-center mb-4 px-2 flex-col md:flex-row gap-4">
@@ -251,19 +251,17 @@ export default function RoomClient({
             <VideoGrid />
           </div>
 
-          {/* Floating Control Bar */}
-          <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10">
-            <ControlBar
-              roomId={room.id}
-              roomCode={roomId}
-              isLocked={room.is_locked || false}
-              role={role}
-              activePanel={activePanel}
-              onTogglePanel={(panel) =>
-                setActivePanel((prev) => (prev === panel ? null : panel))
-              }
-            />
-          </div>
+          {/* Control Bar (Handles its own positioning) */}
+          <ControlBar
+            roomId={room.id}
+            roomCode={roomId}
+            isLocked={room.is_locked || false}
+            role={role}
+            activePanel={activePanel}
+            onTogglePanel={(panel) =>
+              setActivePanel((prev) => (prev === panel ? null : panel))
+            }
+          />
         </div>
       </main>
 
