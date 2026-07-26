@@ -88,7 +88,7 @@ export function useYjsStore({
 
           events.forEach((event) => {
             event.changes.delta.forEach((delta) => {
-              if (delta.insert) {
+              if (delta.insert && Array.isArray(delta.insert)) {
                 delta.insert.forEach((item: any) => {
                   if (store.has(item.key)) {
                     toUpdate.push(item.val)
