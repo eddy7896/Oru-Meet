@@ -151,7 +151,7 @@ export default function RoomClient({
       <aside className="hidden md:flex w-20 shrink-0 flex-col items-center py-8 bg-[#FAFAFA] border-r border-[#E5E7EB]">
         {/* Logo/Brand Icon */}
         <div className="text-[#1A73E8] mb-12">
-          <Profile2User size={32} variant="Bold" />
+          <Profile2User size={32} variant="Bold" color="#1A73E8" />
         </div>
 
         {/* Nav Items */}
@@ -160,20 +160,20 @@ export default function RoomClient({
             onClick={() => router.push('/')}
             className="text-[#9CA3AF] hover:text-[#1A73E8] transition-colors"
           >
-            <Home2 size={24} variant="Bold" />
+            <Home2 size={24} variant="Bold" color="#9CA3AF" />
           </button>
           <button className="text-[#1A73E8] relative w-full flex justify-center">
-            <Video size={24} variant="Bold" />
+            <Video size={24} variant="Bold" color="#1A73E8" />
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#1A73E8] rounded-l-md" />
           </button>
           <button className="text-[#9CA3AF] hover:text-[#1A73E8] transition-colors">
-            <Microphone2 size={24} variant="Bold" />
+            <Microphone2 size={24} variant="Bold" color="#9CA3AF" />
           </button>
           <button 
             className="text-[#9CA3AF] hover:text-[#1A73E8] transition-colors relative"
             onClick={() => setActivePanel(activePanel === "chat" ? null : "chat")}
           >
-            <MessageText size={24} variant="Bold" />
+            <MessageText size={24} variant="Bold" color="#9CA3AF" />
             <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#DC2626] rounded-full border-2 border-[#FAFAFA]" />
           </button>
         </div>

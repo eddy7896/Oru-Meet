@@ -160,7 +160,7 @@ export default function ControlBar({
             camEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-red-500 text-white hover:bg-red-600"
           )}
         >
-          {camEnabled ? <Video size={24} variant="Linear" /> : <VideoSlash size={24} variant="Linear" />}
+          {camEnabled ? <Video size={24} variant="Linear" color="#334155" /> : <VideoSlash size={24} variant="Linear" color="#ffffff" />}
         </button>
 
         {/* Mic toggle */}
@@ -171,7 +171,7 @@ export default function ControlBar({
             micEnabled ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" : "bg-red-500 text-white hover:bg-red-600"
           )}
         >
-          {micEnabled ? <Microphone2 size={24} variant="Linear" /> : <MicrophoneSlash size={24} variant="Linear" />}
+          {micEnabled ? <Microphone2 size={24} variant="Linear" color="#334155" /> : <MicrophoneSlash size={24} variant="Linear" color="#ffffff" />}
         </button>
 
         {/* Leave / End meeting */}
@@ -191,14 +191,14 @@ export default function ControlBar({
             screenEnabled ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
           )}
         >
-          <Monitor size={24} variant="Linear" />
+          <Monitor size={24} variant="Linear" color={screenEnabled ? "#ffffff" : "#334155"} />
         </button>
 
         {/* Closed Captions Placeholder */}
         <button
           className="flex h-12 w-12 items-center justify-center rounded-full transition-all shadow-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
         >
-          <Subtitle size={24} variant="Linear" />
+          <Subtitle size={24} variant="Linear" color="#334155" />
         </button>
 
         {/* Divider */}
@@ -209,7 +209,7 @@ export default function ControlBar({
           onClick={() => setShowSettings(true)}
           className="flex h-12 w-12 items-center justify-center rounded-full transition-all bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
         >
-          <Setting2 size={24} variant="Linear" />
+          <Setting2 size={24} variant="Linear" color="#334155" />
         </button>
       </footer>
     </>
