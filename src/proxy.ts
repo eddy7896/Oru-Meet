@@ -5,12 +5,13 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/api(.*)",
 ]);
 
 /**
  * Next.js 16 Proxy (formerly "middleware").
  * Runs on every request matching `config.matcher`.
- * Protects all routes except sign-in and sign-up.
+ * Protects all routes except sign-in, sign-up, and api (which handle their own auth).
  */
 export const proxy = clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
